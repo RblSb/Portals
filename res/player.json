@@ -1,0 +1,15 @@
+{
+	"frames": [
+		{"set": "stand"},
+		{"set": "run"},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{"set": "brake"},
+		{"set": "jump"},
+		{"set": "soar"},
+		{"set": "fall"}
+	]
+}
