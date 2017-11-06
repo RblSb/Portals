@@ -106,12 +106,12 @@ class Game extends Screen {
 	}
 	
 	public function showText(x:Int, y:Int):Void {
-		var tf = lvl.getObject(2, x, y);
-		if (tf == null) return;
-		var tf = Reflect.field(tf.text, Lang.iso);
+		var obj = lvl.getObject(2, x, y);
+		if (obj == null) return;
+		var tf = Reflect.field(obj.text, Lang.iso);
 		if (tf == null) {
 			if (Lang.iso == "en") return;
-			tf = Reflect.field(tf.text, "en");
+			tf = Reflect.field(obj.text, "en");
 			if (tf == null) return;
 		}
 		

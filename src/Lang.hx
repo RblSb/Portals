@@ -139,6 +139,11 @@ class Lang {
 		//iso = untyped __cpp__('std::locale("").name()');
 		iso = "en";
 		#end
+		var exist = false;
+		for (lang in langs)
+			if (lang == iso) exist = true;
+		
+		if (!exist) iso = "en";
 		iso = iso.substring(0, 2);
 		set(iso);
 	}
