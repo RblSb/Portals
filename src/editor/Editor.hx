@@ -171,7 +171,7 @@ class Editor extends Screen {
 		} else if (key == KeyCode.Escape) {
 			#if kha_html5
 			var confirm = js.Browser.window.confirm;
-			if (!confirm(Lang.get("reset_warning"))) return;
+			if (!confirm(Lang.get("reset_warning")+" "+Lang.get("are_you_sure"))) return;
 			#end
 			var menu = new Menu();
 			menu.show();

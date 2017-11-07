@@ -23,18 +23,29 @@ class Loader {
 		if (sets.lang == null) Lang.init();
 		else Lang.set(sets.lang);
 		
-		/*var editor = new editor.Editor();
-		editor.show();
-		editor.init();
-		return;*/
+		#if kha_html5
+		var nav = js.Browser.window.location.hash.substr(1);
+		switch(nav) {
+		case "editor":
+			var editor = new editor.Editor();
+			editor.show();
+			editor.init();
+		case "game":
+			var game = new Game();
+			game.show();
+			game.init();
+			game.playCompany();
+		default: newMenu();
+		}
+		#else
+		newMenu();
+		#end
+	}
+	
+	inline function newMenu():Void {
 		var menu = new Menu();
 		menu.show();
 		menu.init();
-		return;
-		var game = new Game();
-		game.show();
-		game.init();
-		game.playCompany();
 	}
 	
 	function onRender(framebuffer:Framebuffer):Void {

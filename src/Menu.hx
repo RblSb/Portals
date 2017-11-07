@@ -1,7 +1,7 @@
 package;
 
 import haxe.Constraints.Function;
-import haxe.Timer;
+//import haxe.Timer;
 import kha.Framebuffer;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
@@ -25,8 +25,9 @@ class Menu extends Screen {
 	static var bgscale = 1.0;
 	var particles:Array<Particle> = [];
 	var current:Int;
-	var checker:Timer;
+	//var checker:Timer;
 	var confirm:{yes:Function, no:Function};
+	var githubLink = "https://github.com/RblSb/Portals";
 	
 	public function new() {
 		super();
@@ -116,9 +117,9 @@ class Menu extends Screen {
 			];
 		case 4:
 			menu = [
-				"/"+Lang.get("about_game"),
-				"/"+Lang.get("about_editor"),
-				"/"+Lang.get("about_authors"),
+				"about_game",
+				"about_editor",
+				"about_authors",
 				"github",
 				"back"
 			];
@@ -214,13 +215,12 @@ class Menu extends Screen {
 				font.unloadImages();
 				setMenu(3);
 			case 3:
-				return;
-				if (checker == null) checker = Timer.delay(function() {
+				/*if (checker == null) checker = Timer.delay(function() {
 					Screen.touch = !Screen.touch;
 					Settings.set({touchMode: Screen.touch});
 					setMenu(3);
 					checker = null;
-				}, 100);
+				}, 100);*/
 			case 4: setMenu(35);
 			case 5: setMenu(0);
 			}
@@ -231,7 +231,10 @@ class Menu extends Screen {
 			}
 		case 4: //Info
 			switch(id) {
-			case 3: System.loadUrl("https://github.com/RblSb/Portals");
+			case 0: System.loadUrl(githubLink+"#about-game");
+			case 1: System.loadUrl(githubLink+"#about-level-editor");
+			case 2: System.loadUrl(githubLink+"#about-authors");
+			case 3: System.loadUrl(githubLink);
 			case 4: setMenu(0);
 			}
 			

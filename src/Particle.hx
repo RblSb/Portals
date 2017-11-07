@@ -60,20 +60,4 @@ class Particle {
 		this.scale = scale;
 	}
 	
-	function drawArr(cx:Float, cy:Float):Void {
-		/*for(int i=0;i<l.tsize/2;i++) {
-			bit[i][0+c]+=rnd.nextInt(3)-1; //x
-			bit[i][1+c]-=rnd.nextInt(3); //y
-			if (bit[i][0+c]<bx-5) bit[i][0+c]=bx-5;
-			if (bit[i][0+c]>bx+l.tsize+5) bit[i][0+c]=bx+l.tsize+5;
-
-			if (bit[i][1+c]<by-l.tsize/2) {
-				//if (rnd.nextInt(5)==0)
-				bit[i][0+c]=bx+rnd.nextInt(25);
-				bit[i][1+c]=by;
-			}
-			g.fillRect(bit[i][0+c]-Hero.cx,bit[i][1+c]-Hero.cy,1,1);
-		}*/
-	}
-	
 }

@@ -24,7 +24,7 @@ class Lang {
 		
 		"play_traning" => "Play Training?",
 		"are_you_sure" => "Are you sure?",
-		"reset_warning" => "The data will be lost. Are you sure?",
+		"reset_warning" => "The data will be lost.",
 		"training" => "Training",
 		"level" => "Level",
 		
@@ -86,7 +86,7 @@ class Lang {
 		
 		"play_traning" => "Пройти обучение?",
 		"are_you_sure" => "Вы уверены?",
-		"reset_warning" => "Данные будут потеряны. Вы уверены?",
+		"reset_warning" => "Данные будут потеряны.",
 		"training" => "Обучение",
 		"level" => "Уровень",
 		
@@ -105,7 +105,7 @@ class Lang {
 		
 		"about_game" => "Об игре",
 		"about_editor" => "О редакторе",
-		"about_authors" => "Об авторе",
+		"about_authors" => "Об авторах",
 		
 		"restart" => "Рестарт",
 		"main_menu" => "Главное меню",
@@ -137,7 +137,6 @@ class Lang {
 		iso = js.Browser.navigator.language;
 		#elseif cpp
 		//iso = untyped __cpp__('std::locale("").name()');
-		iso = "en";
 		#end
 		var exist = false;
 		for (lang in langs)
