@@ -195,7 +195,11 @@ class Editor extends Screen {
 					]
 				]
 			],
-			objects: {}
+			objects: {
+				buttons: [],
+				panels: [],
+				texts: []
+			}
 		}
 		onMapLoad(map);
 		#end
