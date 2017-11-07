@@ -317,6 +317,8 @@ class Lvl {
 		var cty = -Std.int(camera.y/tsize);
 		var ctw = ctx + screenW;
 		var cth = cty + screenH;
+		var camX = Std.int(camera.x);
+		var camY = Std.int(camera.y);
 		
 		//tiles offset
 		var sx = ctx < 0 ? 0 : ctx;
@@ -338,8 +340,8 @@ class Lvl {
 					
 					g.drawSubImage(
 						tileset,
-						ix * tsize + camera.x,
-						iy * tsize + camera.y,
+						ix * tsize + camX,
+						iy * tsize + camY,
 						x, y, tsize, tsize
 					);
 				}
@@ -497,8 +499,6 @@ class Lvl {
 		if (camera.y < h - ph) camera.y = h - ph;
 		if (pw < w) camera.x = w/2 - pw/2;
 		if (ph < h) camera.y = h/2 - ph/2;
-		camera.x = Std.int(camera.x); //fix after
-		camera.y = Std.int(camera.y);
 	}
 	
 	public function setCamera(rect:Rect):Void {
@@ -523,8 +523,6 @@ class Lvl {
 			if (camera.y > 0) camera.y = 0;
 			if (camera.y < h - ph) camera.y = h - ph;
 		}
-		camera.x = Std.int(camera.x); //fix after
-		camera.y = Std.int(camera.y);
 	}
 	
 }

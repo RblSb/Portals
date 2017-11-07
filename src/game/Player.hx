@@ -9,6 +9,7 @@ import kha.Assets;
 import Interfaces.Body;
 import Types.IPoint;
 import Types.Point;
+import Types.IRect;
 import Types.Rect;
 import Types.Size;
 
@@ -33,6 +34,7 @@ class Player implements Body {
 	var game:Game;
 	var lvl:Lvl;
 	var origSprite:Image; //for rescaling
+	var origSpriteH:Int;
 	var origFrameW:Array<Int>;
 	var origSize:Size;
 	var origConsts:Consts = {
@@ -48,6 +50,7 @@ class Player implements Body {
 	var tsize(get, never):Int;
 	function get_tsize() return lvl.tsize;
 	var sprite:Image;
+	var spriteH:Int;
 	var clone:Image;
 	var frameW:Array<Int>;
 	var frame = 0;
@@ -76,11 +79,12 @@ class Player implements Body {
 		aimMode = new AimMode(this, lvl);
 		
 		oldTsize = tsize;
-		var tileset = makeSet();
+		var sprite = makeSet();
+		spriteH = origSpriteH = sprite.h;
 		
 		origSize = {
 			w: frameW[1],
-			h: tileset.h
+			h: origSpriteH - 1
 		};
 		rect = {
 			x: 0, y: 0,
@@ -90,7 +94,7 @@ class Player implements Body {
 		consts = Reflect.copy(origConsts);
 	}
 	
-	function makeSet():Rect {
+	function makeSet():IRect {
 		var text = Assets.blobs.player_json.toString();
 		var json:Player_json = haxe.Json.parse(text);
 		var w = 0, h = 0;
@@ -145,6 +149,7 @@ class Player implements Body {
 		
 		var w = Std.int(origSprite.width * scale);
 		var h = Std.int(origSprite.height * scale);
+		spriteH = Std.int(origSpriteH * scale);
 		sprite = Image.createRenderTarget(w, h);
 		var g = sprite.g2;
 		g.begin(true, 0x0);
@@ -379,12 +384,11 @@ class Player implements Body {
 	}
 	
 	public function keys() {
-		//controls
 		var keys = game.keys;
 		var sx = onLand ? consts.landSX : consts.airSX;
 		if ((keys[KeyCode.Left] || keys[KeyCode.A]) && speed.x > -consts.maxRunSX) speed.x -= sx;
 		if ((keys[KeyCode.Right] || keys[KeyCode.D]) && speed.x < consts.maxRunSX) speed.x += sx;
-		if ((keys[KeyCode.Up] || keys[KeyCode.W]) && (onLand || airHack)) { //jump
+		if ((keys[KeyCode.Up] || keys[KeyCode.W] || keys[KeyCode.Space]) && (onLand || airHack)) {
 			onLand = false;
 			speed.y = consts.jump;
 		}
@@ -501,18 +505,18 @@ class Player implements Body {
 		//g.drawRect(rect.x + lvl.camera.x, rect.y + lvl.camera.y, rect.w, rect.h);
 		aimMode.draw(g, aimType);
 		
-		var sy = dir == 1 ? 0 : rect.h;
+		var sy = dir == 1 ? 0 : spriteH;
 		var w = frameW[frame+1] - frameW[frame];
 		var offx = rect.w/2 - w/2;
-		var x = rect.x + lvl.camera.x + offx;
-		var y = rect.y + lvl.camera.y;
+		var x = Math.round(rect.x + lvl.camera.x + offx);
+		var y = Math.round(rect.y + lvl.camera.y - (spriteH - rect.h));
 		g.color = 0xFFFFFFFF;
 		g.rotate(aRotate * Math.PI/180, x + rect.w/2, y + rect.h/2);
 		g.drawSubImage(
 			sprite,
-			Std.int(x), Std.int(y), //fix del int cords
+			x, y,
 			frameW[frame], sy,
-			frameW[frame+1] - frameW[frame], rect.h
+			frameW[frame+1] - frameW[frame], spriteH
 		);
 		g.transformation = Utils.matrix();
 	}
@@ -520,18 +524,18 @@ class Player implements Body {
 	public function setClone(px:Float, py:Float, ang:Float, dir:Int, tile:IPoint):Void {
 		var w = frameW[frame+1] - frameW[frame];
 		var offx = rect.w/2 - w/2;
-		var x = px + lvl.camera.x + offx;
-		var y = py + lvl.camera.y;
+		var x = Math.round(px + offx);
+		var y = Math.round(py - (spriteH - rect.h));
 		var sx = frameW[frame];
 		var dr = dir == -1 ? this.dir : (this.dir+1)%2;
-		var sy = dr == 1 ? 0 : rect.h;
+		var sy = dr == 1 ? 0 : spriteH;
 		var ex = frameW[frame+1] - frameW[frame];
-		var ey = rect.h;
+		var ey = spriteH;
 		
 		var g = clone.g2;
 		g.begin(true, 0x0);
 		//fix scissor
-		g.scissor(tile.x * tsize - Std.int(px + offx), tile.y * tsize - Std.int(py), tsize, tsize);
+		g.scissor(tile.x * tsize - x, tile.y * tsize - y, tsize, tsize);
 		g.rotate((rotate + ang) * Math.PI/180, tsize/2, tsize/2);
 		Screen.pipeline(g);
 		g.drawSubImage(
@@ -548,11 +552,11 @@ class Player implements Body {
 	public function drawClone(g:Graphics, px:Float, py:Float, ang:Float):Void {
 		var w = frameW[frame+1] - frameW[frame];
 		var offx = rect.w/2 - w/2;
-		var x = px + lvl.camera.x + offx;
-		var y = py + lvl.camera.y;
+		var x = Math.round(px + lvl.camera.x + offx);
+		var y = Math.round(py + lvl.camera.y - (spriteH - rect.h));
 		
 		g.color = 0xFFFFFFFF;
-		g.drawImage(clone, Std.int(x), Std.int(y));
+		g.drawImage(clone, x, y);
 	}
 	
 	inline function easeInOutQuad(t:Float) {
