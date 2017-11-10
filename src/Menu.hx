@@ -20,10 +20,10 @@ import Types.Rect;
 class Menu extends Screen {
 	
 	var items:Array<MenuButton> = [];
-	public static var font:Font;
-	public static var fontSize:Int;
-	static var bgscale = 1.0;
-	var particles:Array<Particle> = [];
+	var font:Font;
+	var fontSize:Int;
+	var bgscale = 1.0;
+	var particler:Particler;
 	var current:Int;
 	//var checker:Timer;
 	var confirm:{yes:Function, no:Function};
@@ -34,16 +34,15 @@ class Menu extends Screen {
 	}
 	
 	public function init(id=0):Void {
-		for(i in 0...50) {
-			var x = (- Assets.images.menubg.width + 47 + 31 * Math.random()) * bgscale;
-			var y = (- Assets.images.menubg.height + 28) * bgscale;
-			particles.push(new Particle(
-				x, y,
-				new Vector2(0, -0.5).mult(bgscale),
-				new Vector2(0.5, 0).mult(bgscale),
-				0xFF000000, 60, 60 + Std.random(360), bgscale
-			));
-		}
+		var x = (- Assets.images.menubg.width + 47);
+		var y = (- Assets.images.menubg.height + 28);
+		particler = new Particler({
+			x: x, y: y, w: 31,
+			speed: new Vector2(0, -0.5),
+			wobble: new Vector2(0.5, 0),
+			lifeTime: 60, delay: 45, color: 0xFF000000,
+			count: 50, scale: bgscale
+		});
 		
 		font = Assets.fonts.OpenSans_Regular;
 		setMenu(id);
@@ -352,21 +351,21 @@ class Menu extends Screen {
 		}
 		bgscale = Std.int(min/200);
 		if (bgscale < 1) bgscale = 1;
-		Particle.rescaleAll(particles, bgscale);
+		particler.rescale(bgscale);
+	}
+	
+	override function onUpdate():Void {
+		particler.update();
 	}
 	
 	override function onRender(frame:Framebuffer):Void {
 		var g = frame.g2;
 		g.begin(true, 0xFFBDC3CD);
-		drawParticles(g);
+		particler.draw(g, Screen.w, Screen.h);
 		drawBG(g);
 		drawMenu(g);
 		debugScreen(g);
 		g.end();
-	}
-	
-	inline function drawParticles(g:Graphics):Void {
-		for (p in particles) p.draw(g, Screen.w, Screen.h);
 	}
 	
 	inline function drawBG(g:Graphics):Void {

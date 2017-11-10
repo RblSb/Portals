@@ -19,7 +19,7 @@ typedef Insides = {
 
 class Portal {
 	
-	//var game:Game;
+	var game:Game;
 	var lvl:Lvl;
 	var player:Player;
 	public static var colors = [0xFFFF8000, 0xFF0032FF];
@@ -30,17 +30,15 @@ class Portal {
 	static var oldScale:Float;
 	public var rect:Rect; //portal line
 	public var type:Int; //portal type
-	var side:Int; //portal type
-	var tile:IPoint; //removed tile cords
-	//var tileId:Int; //removed tile id
-	//var tiles:Array<Array<Int>>; //tiles inside portal
-	var particles:Array<Particle> = [];
-	
+	var side:Int; //portal side type
+	var tile:IPoint; //tile cords
+	var particler:Particler;
 	
 	var tsize(get, never):Int;
 	function get_tsize() return lvl.tsize;
 	
-	public function new(player:Player, lvl:Lvl, tile:IPoint, side:Int, type:Int) {
+	public function new(game:Game, player:Player, lvl:Lvl, tile:IPoint, side:Int, type:Int) {
+		this.game = game;
 		this.player = player;
 		this.lvl = lvl;
 		oldScale = lvl.scale;
@@ -70,15 +68,13 @@ class Portal {
 	inline function initParticles():Void {
 		var speed = sideVector(side);
 		var scale = lvl.scale;
-		for(i in 0...30) {
-			particles.push(new Particle(
-				rect.x + rect.w * Math.random(),
-				rect.y + rect.h * Math.random(),
-				new Vector2(speed.x / 2 * scale, speed.y / 2 * scale),
-				new Vector2(speed.y / 2 * scale, speed.x / 2 * scale),
-				colors[type], 30, Std.random(30), scale
-			));
-		}
+		particler = new Particler({
+			x: rect.x, y: rect.y, w: rect.w - scale, h: rect.h - scale,
+			speed: new Vector2(speed.x / 2 * scale, speed.y / 2 * scale),
+			wobble: new Vector2(speed.y / 2 * scale, speed.x / 2 * scale),
+			lifeTime: 30, color: colors[type],
+			count: 30, scale: scale
+		});
 	}
 	
 	public static function add(portal:Portal):Void {
@@ -96,6 +92,7 @@ class Portal {
 	
 	public function remove():Void {
 		pushOut();
+		game.transferParticles(particler);
 		portals.remove(this);
 	}
 	
@@ -126,7 +123,7 @@ class Portal {
 			w: rect.w / oldScale * lvl.scale,
 			h: rect.h / oldScale * lvl.scale
 		}
-		Particle.rescaleAll(particles, lvl.scale);
+		particler.rescale(lvl.scale);
 	}
 	
 	public static function collidePlayer(body:Body):Bool {
@@ -412,7 +409,10 @@ class Portal {
 		return v;
 	}
 	
-	
+	public static function updateAll():Void {
+		for (p in portals)
+			p.particler.update();
+	}
 	
 	public static function renderAllEffects(g:Graphics):Void {
 		for (p in portals)
@@ -425,15 +425,14 @@ class Portal {
 	
 	function render(g:Graphics):Void {
 		g.color = 0xFFFFFFFF;
-		//lvl.drawTile(1, tile.x, tile.y, g, tileId);
 		g.color = colors[type];
 		g.fillRect(
 			rect.x + lvl.camera.x,
 			rect.y + lvl.camera.y,
 			rect.w, rect.h
 		);
+		particler.draw(g, lvl.camera.x, lvl.camera.y);
 		drawLabel(g);
-		drawParticles(g);
 	}
 	
 	inline function drawLabel(g:Graphics):Void {
@@ -454,10 +453,6 @@ class Portal {
 			g.color = color;
 			g.fillRect(x, y, size, size);
 		}
-	}
-	
-	inline function drawParticles(g:Graphics):Void {
-		for (p in particles) p.draw(g, lvl.camera.x, lvl.camera.y);
 	}
 	
 }

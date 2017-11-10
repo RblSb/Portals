@@ -3,8 +3,7 @@ package game;
 import kha.Framebuffer;
 import kha.input.KeyCode;
 import kha.Image;
-//import kha.System;
-//import kha.Scaler;
+import kha.math.Vector2;
 import editor.Editor;
 import Types.IPoint;
 import Types.Rect;
@@ -26,6 +25,7 @@ class Game extends Screen {
 	var textField = new TextField();
 	var currentLevel:Int;
 	var levelProgress:Int;
+	var particlers:Array<Particler> = [];
 	
 	public function new() {
 		super();
@@ -91,6 +91,7 @@ class Game extends Screen {
 			player.speed.y = Math.abs(player.speed.y)/player.speed.y;
 		player.rotate = 0;
 		Portal.removeAll();
+		particlers = [];
 		textField.close(true);
 		for (i in keys.keys()) keys[i] = false;
 	}
@@ -125,6 +126,19 @@ class Game extends Screen {
 	
 	public function showEditor():Void {
 		editor.show();
+	}
+	
+	public function transferParticles(particler:Particler):Void {
+		if (particler.particles.length == 0) return;
+		var p:Particler = particler;
+		p.loop = false;
+		var wobble = p.particles[0].wobble;
+		var max = Math.max(Math.abs(wobble.x), Math.abs(wobble.y));
+		for (i in p.particles) {
+			i.speed = new Vector2();
+			i.wobble = new Vector2(Math.abs(max), Math.abs(max));
+		}
+		particlers.push(p);
 	}
 	
 	public function levelComplete():Void {
@@ -203,11 +217,18 @@ class Game extends Screen {
 		player.rescale(scale);
 		Portal.rescaleAll();
 		textField.rescale(scale);
+		for (particler in particlers)
+			particler.rescale(scale);
 	}
 	
 	override function onUpdate():Void {
 		player.update();
 		Sprite.updateAll();
+		Portal.updateAll();
+		for (p in particlers) {
+			p.update();
+			if (p.particles.length == 0) particlers.remove(p);
+		}
 		if (!viewMode) {
 			player.keys();
 			lvl.setCamera(player.rect);
@@ -240,6 +261,7 @@ class Game extends Screen {
 		player.draw(g);
 		lvl.drawLayer(g, 1);
 		Portal.renderAll(g);
+		for (p in particlers) p.draw(g, lvl.camera.x, lvl.camera.y);
 		textField.draw(g);
 		
 		if (viewMode) {

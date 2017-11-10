@@ -490,7 +490,7 @@ class Player implements Body {
 		if (aimMode.tile == null) return null;
 		var props = lvl.getProps(1, aimMode.tile.x, aimMode.tile.y);
 		if (!props.portalize) return null;
-		return new Portal(this, lvl, aimMode.tile, aimMode.side, aimType);
+		return new Portal(game, this, lvl, aimMode.tile, aimMode.side, aimType);
 	}
 	
 	inline function distAng(ang:Float, toAng:Float):Float {
