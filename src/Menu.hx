@@ -211,7 +211,6 @@ class Menu extends Screen {
 					}
 				}
 				Settings.set({lang: Lang.iso});
-				font.unloadImages();
 				setMenu(3);
 			case 3:
 				/*if (checker == null) checker = Timer.delay(function() {
