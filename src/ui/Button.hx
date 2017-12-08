@@ -24,10 +24,10 @@ typedef ButtonSets = {
 
 class Button {
 	
+	public var rect:Rect;
 	var keys:Array<KeyCode> = [];
 	var isDown = false;
 	var onDownFunc:Function;
-	var rect:Rect;
 	var clickMode = false;
 	var img:Image;
 	var ang = 0.0;
@@ -59,7 +59,7 @@ class Button {
 		}
 		g.color = 0xFFFFFFFF;
 		g.rotate(ang * Math.PI/180, rect.x + rect.w/2, rect.y + rect.h/2);
-		if (img != null) g.drawImage(img, rect.x, rect.y);
+		if (img != null) g.drawScaledImage(img, rect.x, rect.y, rect.w, rect.h);
 		g.transformation = Utils.matrix();
 	}
 	

@@ -17,7 +17,7 @@ class Loader {
 	
 	public function loadComplete():Void {
 		System.removeRenderListener(onRender);
-
+		
 		var sets = Settings.read();
 		Screen._init(sets.touchMode);
 		if (sets.lang == null) Lang.init();

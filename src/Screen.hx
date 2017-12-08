@@ -98,8 +98,8 @@ class Screen {
 		} else if (Mouse.get() != null) {
 			Mouse.get().notify(_onMouseDown, _onMouseUp, _onMouseMove, null);
 		}
-		for (i in keys.keys()) keys[i] = false;
-		for (i in pointers.keys()) pointers[i].used = false;
+		for (k in keys) k = false;
+		for (p in pointers) p.isDown = false;
 	}
 	
 	public function hide():Void {

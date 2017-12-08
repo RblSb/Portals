@@ -71,9 +71,10 @@ class Editor extends Screen {
 		
 		for (i in layerOffsets) tiles.push(0);
 		initButtons();
+		onResize();
 	}
 	
-	inline function initButtons():Void {
+	function initButtons():Void {
 		var i = Assets.images;
 		
 		buttons = [
@@ -85,9 +86,13 @@ class Editor extends Screen {
 		];
 		if (Screen.touch) buttons = buttons.concat([
 			new Button({x: 0, y: tsize*5, img: i.icons_hand, keys: [KeyCode.H]}),
-			new Button({x: 0, y: Screen.h - tsize, img: i.icons_turn, keys: [KeyCode.Control, KeyCode.Z]}),
-			new Button({x: tsize, y: Screen.h - tsize, img: i.icons_turn, keys: [KeyCode.Control, KeyCode.Y]})
+			new Button({x: 0, y: Screen.h - tsize, img: i.icons_undo, keys: [KeyCode.Control, KeyCode.Z]}),
+			new Button({x: tsize, y: Screen.h - tsize, img: i.icons_redo, keys: [KeyCode.Control, KeyCode.Y]})
 		]);
+		for (b in buttons) {
+			b.rect.w *= lvl.scale;
+			b.rect.h *= lvl.scale;
+		}
 	}
 	
 	//@:allow(Pipette)
@@ -103,17 +108,16 @@ class Editor extends Screen {
 	}
 	
 	override function onKeyDown(key:KeyCode):Void {
-		if (keys[KeyCode.Control] || keys[224] || keys[15]) {
+		if (keys[KeyCode.Control] || keys[KeyCode.Meta]) {
 			
-			if (key == KeyCode.Z || key == 1103) {
+			if (key == KeyCode.Z) {
 				if (!keys[KeyCode.Shift]) tool.undo();
 				else tool.redo();
 			}
-			if (key == KeyCode.Y || key == 1085) tool.redo();
+			if (key == KeyCode.Y) tool.redo();
 			
-			if (key == KeyCode.S || key == 1099) {
+			if (key == KeyCode.S) {
 				keys[KeyCode.S] = false;
-				keys[1099] = false;
 				save(lvl.map);
 			}
 		}
@@ -335,6 +339,7 @@ class Editor extends Screen {
 		else {
 			lvl.resize();
 		}
+		initButtons();
 	}
 	
 	override function onRescale(scale:Float):Void {

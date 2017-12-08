@@ -281,10 +281,10 @@ class Game extends Screen {
 		debugScreen(g);
 		g.end();
 		
-		/*frame.g2.begin();
-		frame.g2.drawImage(backbuffer, 0, 0);
+		/*var g = frame.g2;
+		g.begin();
 		Scaler.scale(backbuffer, frame, System.screenRotation);
-		frame.g2.end();*/
+		g.end();*/
 	}
 	
 }
