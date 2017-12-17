@@ -5,6 +5,7 @@ import kha.input.KeyCode;
 import kha.Image;
 import kha.math.Vector2;
 import editor.Editor;
+import Screen.Pointer;
 import Types.IPoint;
 import Types.Rect;
 
@@ -184,18 +185,18 @@ class Game extends Screen {
 		}
 	}
 	
-	override function onMouseDown(id:Int):Void {
-		if (Screen.touch) if (touch.onDown(id)) return;
-		player.onMouseDown(id);
+	override function onMouseDown(p:Pointer):Void {
+		if (Screen.touch) if (touch.onDown(p)) return;
+		player.onMouseDown(p);
 	}
 	
-	override function onMouseMove(id:Int):Void {
-		if (Screen.touch) if (touch.onMove(id)) return;
+	override function onMouseMove(p:Pointer):Void {
+		if (Screen.touch) if (touch.onMove(p)) return;
 	}
 	
-	override function onMouseUp(id:Int):Void {
-		if (Screen.touch) if (touch.onUp(id)) return;
-		player.onMouseUp(id);
+	override function onMouseUp(p:Pointer):Void {
+		if (Screen.touch) if (touch.onUp(p)) return;
+		player.onMouseUp(p);
 	}
 	
 	override function onResize():Void {
@@ -271,11 +272,11 @@ class Game extends Screen {
 		if (Screen.touch) touch.draw(g);
 		
 		#if debug
-		for (i in 0...10) {
-			if (!pointers[i].used) continue;
-			if (pointers[i].isDown) g.color = 0xFFFF0000;
+		for (p in pointers) {
+			if (!p.used) continue;
+			if (p.isDown) g.color = 0xFFFF0000;
 			else g.color = 0xFFFFFFFF;
-			g.fillRect(pointers[i].x-1, pointers[i].y-1, 2, 2);
+			g.fillRect(p.x-1, p.y-1, 2, 2);
 		}
 		#end
 		debugScreen(g);

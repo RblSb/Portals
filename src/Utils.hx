@@ -20,6 +20,13 @@ class Utils {
 		return Math.sqrt(Math.pow(p.x - p2.x, 2) + Math.pow(p.y - p2.y, 2));
 	}
 	
+	public static inline function distAng(ang:Float, toAng:Float):Float {
+		var a = toAng - ang;
+		if (a < -180) a += 360;
+		if (a > 180) a -= 360;
+		return a;
+	}
+	
 	public static inline function matrix(scaleX=1, skewX=0, moveX=0, scaleY=1, skewY=0, moveY=0) {
 		return new kha.math.FastMatrix3(
 			scaleX, skewX, moveX,
@@ -71,6 +78,26 @@ class Utils {
 		var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
 		var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 		return ((u >= 0) && (v >= 0) && (u + v < 1));
+	}
+	
+}
+
+class Easing {
+	
+	public static inline function easeInOutQuad(t:Float) {
+		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+	}
+	
+}
+
+class MathExtension {
+	
+	public static inline function toRad(degrees:Float):Float {
+		return degrees * Math.PI / 180;
+	}
+	
+	public static inline function toDeg(radians:Float):Float {
+		return radians * 180 / Math.PI;
 	}
 	
 }

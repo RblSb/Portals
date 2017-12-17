@@ -2,6 +2,7 @@ package editor;
 
 import kha.graphics2.Graphics;
 import editor.Interfaces.Tool;
+import Screen.Pointer;
 import Lvl.Object;
 import Lvl.TField;
 import haxe.Json;
@@ -24,18 +25,18 @@ class Arrow implements Tool {
 	public function undo():Void {}
 	public function redo():Void {}
 	
-	public function onMouseDown(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		this.x = x;
 		this.y = y;
 		action(layer, x, y, tile);
 	}
 	
-	public function onMouseMove(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseMove(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		this.x = x;
 		this.y = y;
 	}
 	
-	public function onMouseUp(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseUp(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		this.x = x;
 		this.y = y;
 	}

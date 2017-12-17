@@ -8,6 +8,7 @@ import kha.Assets;
 import kha.System;
 import editor.Editor;
 import Menu.MenuButton;
+import Screen.Pointer;
 
 class PauseMenu extends Screen {
 	
@@ -82,37 +83,31 @@ class PauseMenu extends Screen {
 		}
 	}
 	
-	override function onMouseMove(id:Int):Void {
-		var x = pointers[id].x;
-		var y = pointers[id].y;
+	override function onMouseMove(p:Pointer):Void {
 		var state = true;
 		for (i in items) {
-			if (i.check(x, y)) {
+			if (i.check(p.x, p.y)) {
 				i.isOver = state;
 				state = false;
 			} else i.isOver = false;
 		}
 	}
 	
-	override function onMouseDown(id:Int):Void {
-		onMouseMove(id);
+	override function onMouseDown(p:Pointer):Void {
+		onMouseMove(p);
 		if (Screen.touch) return;
-		var x = pointers[id].x;
-		var y = pointers[id].y;
 		for (i in 0...items.length) {
-			if (items[i].check(x, y)) {
+			if (items[i].check(p.x, p.y)) {
 				choose(i);
 				break;
 			}
 		}
 	}
 	
-	override function onMouseUp(id:Int):Void {
+	override function onMouseUp(p:Pointer):Void {
 		if (!Screen.touch) return;
-		var x = pointers[id].x;
-		var y = pointers[id].y;
 		for (i in 0...items.length) {
-			if (items[i].check(x, y)) {
+			if (items[i].check(p.x, p.y)) {
 				choose(i);
 				break;
 			}

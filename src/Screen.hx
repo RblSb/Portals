@@ -20,13 +20,16 @@ import kha.graphics4.VertexStructure;
 //Сlass to unify mouse/touch events and setup game screens
 
 typedef Pointer = {
-	?startX:Int,
-	?startY:Int,
-	?x:Int,
-	?y:Int,
-	?type:Int,
-	?isDown:Bool,
-	?used:Bool
+	id:Int,
+	startX:Int,
+	startY:Int,
+	x:Int,
+	y:Int,
+	moveX:Int,
+	moveY:Int,
+	type:Int,
+	isDown:Bool,
+	used:Bool
 }
 
 class Screen {
@@ -41,7 +44,7 @@ class Screen {
 	public var scale(default, null) = 1.0;
 	public var keys:Map<Int, Bool> = new Map();
 	public var pointers:Map<Int, Pointer> = [
-		for (i in 0...10) i => {startX: 0, startY: 0, x: 0, y: 0, type: 0, isDown: false, used: false}
+		for (i in 0...10) i => {id: i, startX: 0, startY: 0, x: 0, y: 0, moveX: 0, moveY: 0, type: 0, isDown: false, used: false}
 	];
 	#if kha_g4
 	static var _pipeline:PipelineState;
@@ -144,14 +147,16 @@ class Screen {
 		pointers[0].type = button;
 		pointers[0].isDown = true;
 		pointers[0].used = true;
-		onMouseDown(0);
+		onMouseDown(pointers[0]);
 	}
 	
 	inline function _onMouseMove(x:Int, y:Int, mx:Int, my:Int):Void {
 		pointers[0].x = x;
 		pointers[0].y = y;
+		pointers[0].moveX = mx;
+		pointers[0].moveY = my;
 		pointers[0].used = true;
-		onMouseMove(0);
+		onMouseMove(pointers[0]);
 	}
 	
 	inline function _onMouseUp(button:Int, x:Int, y:Int):Void {
@@ -160,7 +165,7 @@ class Screen {
 		pointers[0].y = y;
 		pointers[0].type = button;
 		pointers[0].isDown = false;
-		onMouseUp(0);
+		onMouseUp(pointers[0]);
 	}
 	
 	inline function _onTouchDown(id:Int, x:Int, y:Int):Void {
@@ -171,14 +176,16 @@ class Screen {
 		pointers[id].y = y;
 		pointers[id].isDown = true;
 		pointers[id].used = true;
-		onMouseDown(id);
+		onMouseDown(pointers[id]);
 	}
 	
 	inline function _onTouchMove(id:Int, x:Int, y:Int):Void {
 		if (id > 9) return;
+		pointers[id].moveX = x - pointers[id].x;
+		pointers[id].moveY = y - pointers[id].y;
 		pointers[id].x = x;
 		pointers[id].y = y;
-		onMouseMove(id);
+		onMouseMove(pointers[id]);
 	}
 	
 	inline function _onTouchUp(id:Int, x:Int, y:Int):Void {
@@ -187,7 +194,7 @@ class Screen {
 		pointers[id].x = x;
 		pointers[id].y = y;
 		pointers[id].isDown = false;
-		onMouseUp(id);
+		onMouseUp(pointers[id]);
 	}
 	
 	function debugScreen(g:Graphics):Void {
@@ -197,8 +204,8 @@ class Screen {
 		g.font = Assets.fonts.OpenSans_Regular;
 		g.fontSize = 24;
 		var txt = fps+" | "+System.windowHeight()+"x"+System.windowWidth();
-		var x = System.windowWidth() - g.font.width(g.fontSize, txt, Lang.fontGlyphs);
-		var y = System.windowHeight() - g.font.height(g.fontSize, Lang.fontGlyphs);
+		var x = System.windowWidth() - g.font.width(g.fontSize, txt);
+		var y = System.windowHeight() - g.font.height(g.fontSize);
 		g.drawString(txt, x, y);
 	}
 	
@@ -217,8 +224,8 @@ class Screen {
 	public function onKeyDown(key:KeyCode):Void {}
 	public function onKeyUp(key:KeyCode):Void {}
 	
-	public function onMouseDown(id:Int):Void {}
-	public function onMouseMove(id:Int):Void {}
-	public function onMouseUp(id:Int):Void {}
+	public function onMouseDown(p:Pointer):Void {}
+	public function onMouseMove(p:Pointer):Void {}
+	public function onMouseUp(p:Pointer):Void {}
 	
 }

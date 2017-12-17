@@ -8,7 +8,7 @@ import Types.IPoint;
 import Types.Point;
 import Types.Rect;
 
-typedef Insides = {
+private typedef Insides = {
 	clones:Array<{
 		>Point,
 		rotate:Float,

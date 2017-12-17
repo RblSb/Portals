@@ -6,20 +6,22 @@ import kha.math.Vector2;
 import kha.Image;
 import kha.System;
 import kha.Assets;
+import Utils.Easing;
 import Interfaces.Body;
+import Screen.Pointer;
 import Types.IPoint;
 import Types.Point;
 import Types.IRect;
 import Types.Rect;
 import Types.Size;
 
-typedef Player_json = {
+private typedef Player_json = {
 	frames:Array<{
 		?set:String
 	}>
 };
 
-typedef Consts = {
+private typedef Consts = {
 	friction:Float,
 	gravity:Float,
 	jump:Float,
@@ -440,18 +442,18 @@ class Player implements Body {
 		Sprite.add(new Sprite(lvl, 1, p, 5, id, last));
 	}
 	
-	public function onMouseDown(id:Int):Void {
-		aimType = game.pointers[id].type;
+	public function onMouseDown(p:Pointer):Void {
+		aimType = p.type;
 		aimMode.state = true;
 	}
 	
-	public function onMouseUp(id:Int):Void {
+	public function onMouseUp(p:Pointer):Void {
 		if (!aimMode.state) return;
 		aim();
 		aimMode.state = false;
 		var portal = makePortal();
 		if (portal == null) return;
-		if (Screen.touch) Touch.swapAimType(game.pointers[id]);
+		if (Screen.touch) Touch.swapAimType(p);
 		Portal.add(portal);
 		aimType = 0;
 	}
@@ -491,13 +493,6 @@ class Player implements Body {
 		var props = lvl.getProps(1, aimMode.tile.x, aimMode.tile.y);
 		if (!props.portalize) return null;
 		return new Portal(game, this, lvl, aimMode.tile, aimMode.side, aimType);
-	}
-	
-	inline function distAng(ang:Float, toAng:Float):Float {
-		var a = toAng - ang;
-		if (a < -180) a += 360;
-		if (a > 180) a -= 360;
-		return a;
 	}
 	
 	public function draw(g:Graphics):Void {
@@ -559,17 +554,13 @@ class Player implements Body {
 		g.drawImage(clone, x, y);
 	}
 	
-	inline function easeInOutQuad(t:Float) {
-		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-	}
-	
 	function setAnim():Void {
 		if (rotate < 5 && rotate > -5) rotate = 0;
 		if (rotate != 0) {
-			var dist = distAng(0, rotate);
-			if (dist != 0) rotate -= dist/Math.abs(dist) * 5;
+			var dist = Utils.distAng(0, rotate);
+			if (dist != 0) rotate -= dist / Math.abs(dist) * 5;
 		}
-		aRotate = easeInOutQuad(rotate / 360) * 360;
+		aRotate = Easing.easeInOutQuad(rotate / 360) * 360;
 		
 		var left = false, right = false, up = false;
 		var keys = game.keys;

@@ -29,3 +29,8 @@ typedef IRect = {
 	>IPoint,
 	>ISize,
 }
+
+typedef Range = {
+	min:Float,
+	max:Float
+}

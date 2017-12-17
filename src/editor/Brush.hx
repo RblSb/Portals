@@ -3,6 +3,7 @@ package editor;
 import kha.graphics2.Graphics;
 import editor.Interfaces.Tool;
 import editor.Types.History;
+import Screen.Pointer;
 
 class Brush implements Tool {
 	
@@ -57,18 +58,17 @@ class Brush implements Tool {
 		history(redo_h, undo_h);
 	}
 	
-	public function onMouseDown(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		if (lvl.getTile(layer, x, y) == tile) return;
 		action(layer, x, y, tile);
 	}
 	
-	public function onMouseMove(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseMove(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		if (lvl.getTile(layer, x, y) == tile) return;
-		var pointer = editor.pointers[id];
-		if (pointer.isDown) action(layer, x, y, tile);
+		if (p.isDown) action(layer, x, y, tile);
 	}
 	
-	public function onMouseUp(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseUp(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		if (lvl.getTile(layer, x, y) == tile) return;
 		action(layer, x, y, tile);
 	}

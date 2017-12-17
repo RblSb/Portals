@@ -5,7 +5,7 @@ import kha.math.Vector2;
 import kha.Color;
 import Types.Rect;
 
-typedef ParticleSets = {
+private typedef ParticleSets = {
 	x:Float,
 	y:Float,
 	?speed:Vector2,
@@ -16,7 +16,7 @@ typedef ParticleSets = {
 	color:Int
 }
 
-typedef ParticlerSets = {
+private typedef ParticlerSets = {
 	>ParticleSets,
 	count:Int,
 	?scale:Float,

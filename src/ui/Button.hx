@@ -10,7 +10,7 @@ import Types.Point;
 import Types.Rect;
 import Screen.Pointer;
 
-typedef ButtonSets = {
+private typedef ButtonSets = {
 	x:Float,
 	y:Float,
 	?w:Float,

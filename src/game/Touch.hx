@@ -8,8 +8,8 @@ import kha.FastFloat;
 import kha.input.KeyCode;
 import ui.Button;
 import ui.Trigger;
-import Types.Rect;
 import Screen.Pointer;
+import Types.Rect;
 
 class Touch {
 	
@@ -155,21 +155,18 @@ class Touch {
 		init();
 	}
 	
-	public function onDown(id:Int):Bool {
-		var pointer = game.pointers[id];
-		if (Button.onDown(game, buttons, pointer)) return true;
+	public function onDown(p:Pointer):Bool {
+		if (Button.onDown(game, buttons, p)) return true;
 		return false;
 	}
 	
-	public function onMove(id:Int):Bool {
-		var pointer = game.pointers[id];
-		if (Button.onMove(game, buttons, pointer)) return true;
+	public function onMove(p:Pointer):Bool {
+		if (Button.onMove(game, buttons, p)) return true;
 		return false;
 	}
 	
-	public function onUp(id:Int):Bool {
-		var pointer = game.pointers[id];
-		if (Button.onUp(game, buttons, pointer)) return true;
+	public function onUp(p:Pointer):Bool {
+		if (Button.onUp(game, buttons, p)) return true;
 		return false;
 	}
 	

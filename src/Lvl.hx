@@ -10,13 +10,13 @@ import Types.IPoint;
 import Types.Point;
 import Types.Rect;
 
-typedef Tiles = { //tiles.json
+private typedef Tiles = { //tiles.json
 	tsize:Int,
 	scale:Float,
 	layers:Array<Array<Props>>
 }
 
-typedef Props = {
+private typedef Props = {
 	id:Int,
 	?load:String,
 	?collide:Bool,
@@ -65,7 +65,9 @@ class Lvl {
 	var layersOffset:Array<Int>;
 	var layersNum:Int;
 	var tilesNum:Int;
+	var emptyProps:Props = {id: 0, collide: false, permeable: true};
 	var props:Array<Array<Props>>;
+	
 	public var map(default, null):GameMap;
 	public var w(get, never):Int;
 	public var h(get, never):Int;
@@ -91,125 +93,22 @@ class Lvl {
 	function initTiles():Void {
 		var text = Assets.blobs.tiles_json.toString();
 		var json:Tiles = haxe.Json.parse(text);
-		var layers = json.layers;
-		origTsize = tsize = json.tsize;
-		layersNum = layers.length;
-		tilesNum = _countTiles(layers);
-		tilesOffset = [];
-		spritesLink = [];
-		spritesOffset = [];
-		layersOffset = [0];
-		props = [];
 		
-		tilesetW = Math.ceil(Math.sqrt(tilesNum));
-		tilesetH = Math.ceil(tilesNum / tilesetW);
-		origTileset = Image.createRenderTarget(tilesetW * tsize, tilesetH * tsize);
-		var g = origTileset.g2;
-		g.begin(true, 0x0);
-		Screen.pipeline(g);
-		var offx = tsize;
+		var ts = new TilesetGenerator(json, emptyProps);
+		origTsize = tsize = ts.tsize;
+		layersNum = ts.layersNum;
+		tilesNum = ts.tilesNum;
+		tilesOffset = ts.tilesOffset;
+		spritesLink = ts.spritesLink;
+		spritesOffset = ts.spritesOffset;
+		layersOffset = ts.layersOffset;
+		props = ts.props;
 		
-		for (l in 0...layersNum) {
-			var layer = layers[l];
-			//empty tile properties for every layer
-			props.push([emptyProp()]);
-			var tilesN = 0;
-			
-			for (tile in layer) {
-				var bmd = _loadTile(l, tile.id);
-				_drawTile(g, bmd, offx, 0);
-				offx += tsize;
-				tilesN++;
-				props[l].push(tile);
-				
-				if (tile.load == "rotate")
-					for (i in 1...4) {
-						_drawRotatedTile(g, bmd, offx, 0, i * 90);
-						offx += tsize;
-						tilesN++;
-						props[l].push(tile);
-					}
-			}
-			
-			//draw sprite frames after
-			spritesOffset[l] = [0];
-			spritesLink[l] = [];
-			var spritesNum = 0;
-			for (tile in layer) {
-				var bmd = _loadTile(l, tile.id);
-				var frames = Std.int(bmd.width/tsize);
-				if (frames < 2) continue;
-				
-				var len = spritesOffset[l].length - 1;
-				spritesLink[l][tile.id] = len;
-				spritesOffset[l].push(spritesOffset[l][len] + frames-1);
-				
-				for (i in 1...frames) {
-					_drawTile(g, bmd, offx, i);
-					offx += tsize;
-					spritesNum++;
-					if (layer[tile.id-1].frames != null) {
-						props[l].push(layer[tile.id-1].frames[i-1]);
-					} else props[l].push(layer[tile.id-1]);
-				}
-				
-				
-				if (tile.load == "rotate")
-				for (i2 in 1...4) {
-					
-					var len = spritesOffset[l].length - 1;
-					spritesLink[l][tile.id+i2] = len;
-					spritesOffset[l].push(spritesOffset[l][len] + frames-1);
-					
-					for (i in 1...frames) {
-						_drawRotatedTile(g, bmd, offx, i, i2 * 90);
-						offx += tsize;
-						spritesNum++;
-						if (layer[tile.id-1].frames != null) {
-							props[l].push(layer[tile.id-1].frames[i-1]);
-						} else props[l].push(layer[tile.id-1]);
-					}
-				}
-			}
-			//save layer offset
-			tilesOffset.push(tilesN);
-			var prev = layersOffset[layersOffset.length-1];
-			layersOffset.push(prev + tilesN + spritesNum);
-		}
-		g.end();
+		origTileset = ts.tileset;
+		tilesetW = ts.tilesetW;
+		tilesetH = ts.tilesetH;
+		
 		_rescale(json.scale);
-	}
-	
-	inline function _countTiles(layers:Array<Array<Props>>):Int {
-		var count = 1;
-		for (l in 0...layersNum) {
-			var layer = layers[l];
-			for (tile in layer) {
-				var bmd = _loadTile(l, tile.id);
-				var num = Std.int(bmd.width/tsize);
-				if (tile.load == "rotate") num *= 4;
-				count += num;
-			}
-		}
-		return count;
-	}
-	
-	inline function _loadTile(layer:Int, tile:Int):Image {
-		return Reflect.field(Assets.images, "tiles_"+layer+"_"+tile);
-	}
-	
-	inline function _drawTile(g:Graphics, bmd:Image, offx:Int, i:Int):Void {
-		var x = offx % (tilesetW * tsize);
-		var y = Std.int(offx / (tilesetW * tsize)) * tsize;
-		g.drawSubImage(bmd, x, y, i*tsize, 0, tsize, tsize);
-	}
-	
-	inline function _drawRotatedTile(g:Graphics, bmd:Image, offx:Int, i:Int, ang:Int):Void {
-		var x = offx % (tilesetW * tsize);
-		var y = Std.int(offx / (tilesetW * tsize)) * tsize;
-		g.rotate(ang * Math.PI/180, x + tsize/2, y + tsize/2);
-		g.drawSubImage(bmd, x, y, i * tsize, 0, tsize, tsize);
-		g.transformation = Utils.matrix();
 	}
 	
 	public static function exists(id:Int):Bool {
@@ -289,11 +188,7 @@ class Lvl {
 			var id = map.layers[layer][y][x];
 			return props[layer][id];
 		}
-		return emptyProp();
-	}
-	
-	inline function emptyProp():Props {
-		return {id: 0, collide: false, permeable: true};
+		return emptyProps;
 	}
 	
 	public function drawTile(g:Graphics, layer:Int, x:Int, y:Int, id:Int):Void {
@@ -523,6 +418,146 @@ class Lvl {
 			if (camera.y > 0) camera.y = 0;
 			if (camera.y < h - ph) camera.y = h - ph;
 		}
+	}
+	
+}
+
+private class TilesetGenerator {
+	
+	public var tilesOffset:Array<Int>;
+	public var spritesLink:Array<Array<Int>>;
+	public var spritesOffset:Array<Array<Int>>;
+	public var layersOffset:Array<Int>;
+	public var layersNum:Int;
+	public var tilesNum:Int;
+	public var props:Array<Array<Props>>;
+	
+	public var tileset:Image;
+	public var tilesetW:Int;
+	public var tilesetH:Int;
+	public var tsize:Int;
+	
+	public function new(json:Tiles, emptyProps:Props):Void {
+		var layers = json.layers;
+		tsize = json.tsize;
+		layersNum = layers.length;
+		tilesNum = countTiles(layers);
+		tilesOffset = [];
+		spritesLink = [];
+		spritesOffset = [];
+		layersOffset = [0];
+		props = [];
+		
+		tilesetW = Math.ceil(Math.sqrt(tilesNum));
+		tilesetH = Math.ceil(tilesNum / tilesetW);
+		tileset = Image.createRenderTarget(tilesetW * tsize, tilesetH * tsize);
+		var g = tileset.g2;
+		g.begin(true, 0x0);
+		Screen.pipeline(g);
+		var offx = tsize;
+		
+		for (l in 0...layersNum) {
+			var layer = layers[l];
+			//empty tile properties for every layer
+			props.push([emptyProps]);
+			var tilesN = 0;
+			
+			for (tile in layer) {
+				var bmd = loadTile(l, tile.id);
+				drawTile(g, bmd, offx, 0);
+				offx += tsize;
+				tilesN++;
+				props[l].push(tile);
+				
+				if (tile.load == "rotate")
+					for (i in 1...4) {
+						drawRotatedTile(g, bmd, offx, 0, i * 90);
+						offx += tsize;
+						tilesN++;
+						props[l].push(tile);
+					}
+			}
+			
+			//draw sprite frames after
+			spritesOffset[l] = [0];
+			spritesLink[l] = [];
+			var spritesN = 0;
+			
+			for (tile in layer) {
+				var bmd = loadTile(l, tile.id);
+				var frames = Std.int(bmd.width/tsize);
+				if (frames < 2) continue;
+				
+				var len = spritesOffset[l].length - 1;
+				spritesLink[l][tile.id] = len;
+				spritesOffset[l].push(spritesOffset[l][len] + frames-1);
+				
+				for (i in 1...frames) {
+					drawTile(g, bmd, offx, i);
+					offx += tsize;
+					spritesN++;
+					
+					var sprite = layer[tile.id-1];
+					if (sprite.frames == null) props[l].push(sprite);
+					else props[l].push(sprite.frames[i-1]);
+				}
+				
+				if (tile.load == "rotate")
+				for (i2 in 1...4) {
+					var len = spritesOffset[l].length - 1;
+					spritesLink[l][tile.id+i2] = len;
+					spritesOffset[l].push(spritesOffset[l][len] + frames-1);
+					
+					for (i in 1...frames) {
+						drawRotatedTile(g, bmd, offx, i, i2 * 90);
+						offx += tsize;
+						spritesN++;
+						
+						var sprite = layer[tile.id-1];
+						if (sprite.frames == null) props[l].push(sprite);
+						else props[l].push(sprite.frames[i-1]);
+					}
+				}
+			}
+			
+			//save layer offset
+			tilesOffset.push(tilesN);
+			var prev = layersOffset[layersOffset.length-1];
+			layersOffset.push(prev + tilesN + spritesN);
+		}
+		g.end();
+	}
+	
+	inline function countTiles(layers:Array<Array<Props>>):Int {
+		var count = 1;
+		for (l in 0...layersNum) {
+			var layer = layers[l];
+			for (tile in layer) {
+				var bmd = loadTile(l, tile.id);
+				var num = Std.int(bmd.width / tsize);
+				if (tile.load == "rotate") num *= 4;
+				count += num;
+			}
+		}
+		return count;
+	}
+	
+	inline function loadTile(layer:Int, tile:Int):Image {
+		return Reflect.field(Assets.images, "tiles_"+layer+"_"+tile);
+	}
+	
+	inline function drawTile(g:Graphics, bmd:Image, offx:Int, i:Int):Void {
+		var x = offx % (tilesetW * tsize);
+		var y = Std.int(offx / (tilesetW * tsize)) * tsize;
+		g.drawSubImage(bmd, x, y, i*tsize, 0, tsize, tsize);
+	}
+	
+	inline function drawRotatedTile(g:Graphics, bmd:Image, offx:Int, i:Int, ang:Int):Void {
+		var x = offx % (tilesetW * tsize);
+		var y = Std.int(offx / (tilesetW * tsize)) * tsize;
+		g.rotate(ang * Math.PI/180, x + tsize/2, y + tsize/2);
+		g.drawSubImage(bmd, x, y, i * tsize, 0, tsize, tsize);
+		g.transformation = Utils.matrix();
 	}
 	
 }

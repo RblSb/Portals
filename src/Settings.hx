@@ -3,24 +3,28 @@ package;
 import kha.Storage;
 import kha.StorageFile;
 
-typedef SettingsData = {
+private typedef SettingsData = {
 	?v:Int,
 	?levelProgress:Int,
 	?musicVolume:Int,
 	?lang:String,
 	?controlType:Int,
-	?touchMode:Bool,
+	?touchMode:Bool
 }
 
 class Settings {
 	
 	static inline var v = 1;
+	static var defaults:SettingsData = {
+		v: v,
+		levelProgress: 1,
+		controlType: 1
+	};
 	
 	public static function read():SettingsData {
 		var file = Storage.defaultFile();
 		var data:SettingsData = file.readObject();
 		data = checkData(data);
-		//trace(data);
 		return data;
 	}
 	
@@ -49,12 +53,7 @@ class Settings {
 	
 	static inline function checkData(data:SettingsData):SettingsData {
 		if (data != null && data.v == v) return data;
-		var data:SettingsData = {
-			v: v,
-			levelProgress: 1,
-			controlType: 1
-		};
-		return data;
+		return defaults;
 	}
 	
 }

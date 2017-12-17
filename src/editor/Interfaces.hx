@@ -2,6 +2,7 @@ package editor;
 
 import kha.graphics2.Graphics;
 import kha.math.Vector2;
+import Screen.Pointer;
 import Types.IPoint;
 import Types.Rect;
 
@@ -10,9 +11,9 @@ interface Tool {
 	function clearHistory():Void;
 	function undo():Void;
 	function redo():Void;
-	function onMouseDown(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void;
-	function onMouseMove(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void;
-	function onMouseUp(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void;
+	function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void;
+	function onMouseMove(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void;
+	function onMouseUp(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void;
 	function onRender(g:Graphics):Void;
 	function onUpdate():Void;
 }

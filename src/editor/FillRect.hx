@@ -1,10 +1,11 @@
 package editor;
 
 import kha.graphics2.Graphics;
-import Types.IPoint;
-import Types.IRect;
 import editor.Interfaces.Tool;
 import editor.Types.ArrHistory;
+import Screen.Pointer;
+import Types.IPoint;
+import Types.IRect;
 
 class FillRect implements Tool {
 	
@@ -67,7 +68,7 @@ class FillRect implements Tool {
 		history(redo_h, undo_h);
 	}
 	
-	public function onMouseDown(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		start = {
 			x: x,
 			y: y
@@ -75,15 +76,15 @@ class FillRect implements Tool {
 		end = start;
 	}
 	
-	public function onMouseMove(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
-		if (!editor.pointers[id].isDown) return;
+	public function onMouseMove(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
+		if (!p.isDown) return;
 		end = {
 			x: x,
 			y: y
 		};
 	}
 	
-	public function onMouseUp(id:Int, layer:Int, x:Int, y:Int, tile:Int):Void {
+	public function onMouseUp(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
 		end = {
 			x: x,
 			y: y

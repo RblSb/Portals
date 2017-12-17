@@ -8,6 +8,7 @@ import kha.Image;
 import ui.Button;
 import game.Game;
 import editor.Interfaces.Tool;
+import Screen.Pointer;
 import Lvl.GameMap;
 import Types.IPoint;
 import Types.Point;
@@ -310,25 +311,21 @@ class Editor extends Screen {
 		if (y > lvl.h-1) y = lvl.h-1;
 	}
 	
-	override function onMouseDown(id:Int):Void {
-		var pointer = pointers[id];
-		if (Button.onDown(this, buttons, pointer)) return;
-		
-		updateCursor(pointer);
-		tool.onMouseDown(id, layer, x, y, tiles[layer]);
+	override function onMouseDown(p:Pointer):Void {
+		if (Button.onDown(this, buttons, p)) return;
+		updateCursor(p);
+		tool.onMouseDown(p, layer, x, y, tiles[layer]);
 	}
 	
-	override function onMouseMove(id:Int):Void {
-		var pointer = pointers[id];
-		if (Button.onMove(this, buttons, pointer)) return;
-		updateCursor(pointer);
-		tool.onMouseMove(id, layer, x, y, tiles[layer]);
+	override function onMouseMove(p:Pointer):Void {
+		if (Button.onMove(this, buttons, p)) return;
+		updateCursor(p);
+		tool.onMouseMove(p, layer, x, y, tiles[layer]);
 	}
 	
-	override function onMouseUp(id:Int):Void {
-		var pointer = pointers[id];
-		if (Button.onUp(this, buttons, pointer)) return;
-		tool.onMouseUp(id, layer, x, y, tiles[layer]);
+	override function onMouseUp(p:Pointer):Void {
+		if (Button.onUp(this, buttons, p)) return;
+		tool.onMouseUp(p, layer, x, y, tiles[layer]);
 	}
 	
 	override function onResize():Void {
@@ -402,11 +399,11 @@ class Editor extends Screen {
 		g.drawString(""+x+", "+y, 0, fh);
 		
 		#if debug
-		for (i in 0...10) {
-			if (!pointers[i].used) continue;
-			if (pointers[i].isDown) g.color = 0xFFFF0000;
+		for (p in pointers) {
+			if (!p.used) continue;
+			if (p.isDown) g.color = 0xFFFF0000;
 			else g.color = 0xFFFFFFFF;
-			g.fillRect(pointers[i].x-1, pointers[i].y-1, 2, 2);
+			g.fillRect(p.x-1, p.y-1, 2, 2);
 		}
 		#end
 		debugScreen(g);
