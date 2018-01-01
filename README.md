@@ -30,7 +30,6 @@ Sorry for any localization errors.
 ### About Authors
 * Level Editor icons: Freepik.com
 * Made with [Kha](https://github.com/Kode/Kha)
-* Currently i'm using [branch](https://github.com/RblSb/Kha/tree/unstable) with temporary glyphs hack.
 
 ### TODO
 * Fix portal animation logic and bugs

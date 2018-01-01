@@ -38,7 +38,7 @@ class Editor extends Screen {
 	function get_tsize() return lvl.tsize;
 	var cursor:IPoint = {x: 0, y: 0};
 	var layer = 1;
-	var layerOffsets:Array<Int> = [5, 10, 5];
+	var layerOffsets:Array<Int>;
 	var tiles:Array<Int> = [];
 	var x = 0;
 	var y = 0;
@@ -62,6 +62,7 @@ class Editor extends Screen {
 		lvl = new Lvl();
 		lvl.init();
 		lvl.loadMap(0);
+		layerOffsets = lvl.getTilesOffset();
 		
 		arrow = new Arrow(this, lvl);
 		brush = new Brush(this, lvl);
@@ -392,10 +393,9 @@ class Editor extends Screen {
 		g.color = 0xFF000000;
 		g.font = Assets.fonts.OpenSans_Regular;
 		g.fontSize = 24;
-		g.fontGlyphs = Lang.fontGlyphs;
 		var s = ""+layer+" | "+tiles[layer]+" | "+lvl.countObjects(layer)+" | "+toolName;
 		g.drawString(s, 0, 0);
-		var fh = g.font.height(g.fontSize, Lang.fontGlyphs);
+		var fh = g.font.height(g.fontSize);
 		g.drawString(""+x+", "+y, 0, fh);
 		
 		#if debug

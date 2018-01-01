@@ -22,6 +22,7 @@ class Loader {
 		Screen._init(sets.touchMode);
 		if (sets.lang == null) Lang.init();
 		else Lang.set(sets.lang);
+		Font.glyphs = Lang.fontGlyphs;
 		
 		#if kha_html5
 		var nav = js.Browser.window.location.hash.substr(1);

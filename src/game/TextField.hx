@@ -45,7 +45,7 @@ class TextField {
 	
 	public function rescale(scale:Float):Void {
 		fontSize = 24 * Std.int(scale);
-		fontH = font.height(fontSize, Lang.fontGlyphs);
+		fontH = font.height(fontSize);
 		h = fontH * 4;
 		if (state == 0) return;
 		
@@ -80,10 +80,10 @@ class TextField {
 		
 		while (i < text.length) {
 			var line = text.substring(lastBreak, i + 1);
-			var fw = font.width(fontSize, line, Lang.fontGlyphs);
+			var fw = font.width(fontSize, line);
 			
 			if (lines.length % (h / fontH) == h / fontH - 1) //last line offset
-				width = origWidth - font.width(fontSize, author, Lang.fontGlyphs);
+				width = origWidth - font.width(fontSize, author);
 			else width = origWidth;
 			
 			if (fw > width) {
@@ -148,7 +148,7 @@ class TextField {
 	
 	
 	inline function drawAuthor(g:Graphics):Void {
-		var autw = font.width(fontSize, author, Lang.fontGlyphs);
+		var autw = font.width(fontSize, author);
 		g.fillRect(Screen.w - autw, h - fontH, autw, fontH);
 		g.color = 0xFFFFFFFF;
 		g.drawString(author, Screen.w - autw, h - fontH);

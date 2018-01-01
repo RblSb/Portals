@@ -5,7 +5,6 @@ import kha.Image;
 import kha.Assets;
 import kha.Blob;
 import kha.System;
-import Interfaces.Body;
 import Types.IPoint;
 import Types.Point;
 import Types.Rect;
@@ -418,6 +417,10 @@ class Lvl {
 			if (camera.y > 0) camera.y = 0;
 			if (camera.y < h - ph) camera.y = h - ph;
 		}
+	}
+	
+	public function getTilesOffset():Array<Int> {
+		return tilesOffset;
 	}
 	
 }

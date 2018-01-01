@@ -50,12 +50,12 @@ class PauseMenu extends Screen {
 		fontSize = Std.int(min/10/2)*2;
 		var maxW = 0.0;
 		for (item in items) {
-			var w = font.width(fontSize, item.text, Lang.fontGlyphs);
+			var w = font.width(fontSize, item.text);
 			if (maxW < w) maxW = w;
 		}
 		
 		for (i in 0...items.length) {
-			var fh = font.height(fontSize, Lang.fontGlyphs);
+			var fh = font.height(fontSize);
 			var y = (Screen.h - items.length * fh) / 2 + i * fh;
 			//items[i].rect.x = fh * (items.length - i);
 			items[i].rect.y = y;
@@ -132,7 +132,7 @@ class PauseMenu extends Screen {
 			inited = true;
 		}
 		
-		var fh = font.height(fontSize, Lang.fontGlyphs);
+		var fh = font.height(fontSize);
 		var last = items.length - 1;
 		g.color = 0x05000000;
 		g.fillRect(

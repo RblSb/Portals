@@ -256,7 +256,6 @@ class Game extends Screen {
 	override function onRender(frame:Framebuffer):Void {
 		var g = frame.g2;
 		g.begin(true, 0xFFBDC3CD);
-		g.fontGlyphs = Lang.fontGlyphs;
 		lvl.drawLayer(g, 0);
 		Portal.renderAllEffects(g);
 		player.draw(g);

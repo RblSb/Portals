@@ -330,12 +330,12 @@ class Menu extends Screen {
 		fontSize = Std.int(min/10/2)*2;
 		var maxW = 0.0;
 		for (item in items) {
-			var w = font.width(fontSize, item.text, Lang.fontGlyphs);
+			var w = font.width(fontSize, item.text);
 			if (maxW < w) maxW = w;
 		}
 		
 		for (i in 0...items.length) {
-			var fh = font.height(fontSize, Lang.fontGlyphs);
+			var fh = font.height(fontSize);
 			var y = (Screen.h - items.length * fh) / 2 + i * fh;
 			items[i].rect.x = fh;
 			items[i].rect.y = y;
@@ -390,8 +390,8 @@ class MenuButton extends ui.Trigger {
 		this.align = align;
 		if (r == null) r = {
 			x: p.x, y: p.y,
-			w: font.width(size, text, Lang.fontGlyphs),
-			h: font.height(size, Lang.fontGlyphs)
+			w: font.width(size, text),
+			h: font.height(size)
 		}
 		super(r);
 	}
@@ -414,7 +414,6 @@ class MenuButton extends ui.Trigger {
 		} else g.color = 0xFF000000;
 		g.font = font;
 		g.fontSize = fontSize;
-		g.fontGlyphs = Lang.fontGlyphs;
 		var offx = alignment();
 		g.drawString(text, rect.x + offx, rect.y);
 	}
@@ -433,7 +432,6 @@ class MenuButton extends ui.Trigger {
 		} else g.color = 0x88000000;
 		g.font = font;
 		g.fontSize = fontSize;
-		g.fontGlyphs = Lang.fontGlyphs;
 		var offx = alignment();
 		g.drawString(text.substring(1), rect.x + offx, rect.y);
 	}
@@ -442,10 +440,10 @@ class MenuButton extends ui.Trigger {
 		var offx = 0.0;
 		switch(align) {
 		case 1: //center
-			var w = font.width(fontSize, text, Lang.fontGlyphs);
+			var w = font.width(fontSize, text);
 			offx = (rect.w - w) / 2;
 		case 2: //right
-			var w = font.width(fontSize, text, Lang.fontGlyphs);
+			var w = font.width(fontSize, text);
 			offx = (rect.w - w);
 		}
 		return offx;
