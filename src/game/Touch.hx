@@ -8,11 +8,12 @@ import kha.FastFloat;
 import kha.input.KeyCode;
 import ui.Button;
 import ui.Trigger;
-import Screen.Pointer;
-import Types.Rect;
+import khm.Screen;
+import khm.Screen.Pointer;
+import khm.Types.Rect;
 
 class Touch {
-	
+
 	var game:Game;
 	var scale = 1.0;
 	static inline var BG = 0x10FFFFFF;
@@ -27,25 +28,25 @@ class Touch {
 	var mainSize = 50;
 	var size:Int;
 	static var nextAimType = 0;
-	
+
 	public function new(game:Game) {
 		this.game = game;
 		//init();
 	}
-	
+
 	public function init():Void {
 		rescale();
 		initImages();
 		initButtons();
 	}
-	
+
 	inline function rescale():Void {
 		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
 		var scale = min / 300;
 		if (scale < 1) scale = 1;
 		size = Std.int(mainSize * scale);
 	}
-	
+
 	inline function initImages():Void {
 		actionBtn = Image.createRenderTarget(size, size);
 		var g = actionBtn.g2;
@@ -57,7 +58,7 @@ class Touch {
 			size - size/2, size - size/2
 		);
 		g.end();
-		
+
 		mainArrow = Image.createRenderTarget(size, size);
 		var g = mainArrow.g2;
 		g.begin(true, 0x0);
@@ -69,7 +70,7 @@ class Touch {
 			size, size - size/4
 		);
 		g.end();
-		
+
 		subArrow = Image.createRenderTarget(size, size);
 		var g = subArrow.g2;
 		g.begin(true, 0x0);
@@ -81,7 +82,7 @@ class Touch {
 			size, size/2
 		);
 		g.end();
-		
+
 		minusBtn = Image.createRenderTarget(size, size);
 		var g = minusBtn.g2;
 		g.begin(true, 0x0);
@@ -92,7 +93,7 @@ class Touch {
 		var h = size/8;
 		g.fillRect(off, size/2 - h/2, w, h);
 		g.end();
-		
+
 		plusBtn = Image.createRenderTarget(size, size);
 		var g = plusBtn.g2;
 		g.begin(true, 0x0);
@@ -104,7 +105,7 @@ class Touch {
 		g.fillRect(off, size/2 - h/2, w, h);
 		g.fillRect(size/2 - h/2, off, h, w);
 		g.end();
-		
+
 		pauseBtn = Image.createRenderTarget(size, size);
 		var g = pauseBtn.g2;
 		g.begin(true, 0x0);
@@ -116,15 +117,15 @@ class Touch {
 		g.fillRect(off, off, w, h);
 		g.fillRect(size - off - w, off, w, h);
 		g.end();
-		
+
 		var fix = Image.createRenderTarget(1, 1); //fix
 	}
-	
+
 	inline function fillBG(g:Graphics):Void {
 		g.color = BG;
 		g.fillRect(0, 0, size, size);
 	}
-	
+
 	inline function initButtons():Void {
 		var sx = 0;
 		var sy = Screen.h - size * 3;
@@ -134,7 +135,7 @@ class Touch {
 			new Button({x: sx + size, y: sy + size * 2, img: mainArrow, ang: 180, keys: [KeyCode.Down]}),
 			new Button({x: sx, y: sy + size, img: mainArrow, ang: 270, keys: [KeyCode.Left]}),
 			new Button({x: sx + size, y: sy + size, img: actionBtn, keys: [KeyCode.E], clickMode: true}),
-			
+
 			new Button({x: sx, y: sy, img: subArrow, keys: [KeyCode.Left, KeyCode.Up]}),
 			new Button({x: sx + size * 2, y: sy, img: subArrow, ang: 90, keys: [KeyCode.Right, KeyCode.Up]}),
 			new Button({x: sx + size * 2, y: sy + size * 2, img: subArrow, ang: 180, keys: [KeyCode.R], clickMode: true}),
@@ -145,31 +146,31 @@ class Touch {
 			new Button({x: Screen.w - size, y: Screen.h - size, w: size, h: size, onDown: swapAimType})
 		];
 	}
-	
+
 	public static function swapAimType(p:Pointer):Void {
 		nextAimType = nextAimType == 1 ? 0 : 1;
 		p.type = nextAimType;
 	}
-	
+
 	public function resize():Void {
 		init();
 	}
-	
+
 	public function onDown(p:Pointer):Bool {
 		if (Button.onDown(game, buttons, p)) return true;
 		return false;
 	}
-	
+
 	public function onMove(p:Pointer):Bool {
 		if (Button.onMove(game, buttons, p)) return true;
 		return false;
 	}
-	
+
 	public function onUp(p:Pointer):Bool {
 		if (Button.onUp(game, buttons, p)) return true;
 		return false;
 	}
-	
+
 	public function draw(g:Graphics):Void {
 		for (b in buttons) b.draw(g);
 		var color:Color = Portal.colors[nextAimType];
@@ -181,5 +182,5 @@ class Touch {
 			Screen.w, Screen.h
 		);
 	}
-	
+
 }

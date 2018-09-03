@@ -1,5 +1,5 @@
 {
-	"tileSize": 48,
+	"tsize": 48,
 	"layers": [
 		[
 			{},
@@ -10,16 +10,19 @@
 				"file": "tiles/0/2"
 			},
 			{
+				"file": "tiles/0/2",
 				"tx": 0,
 				"ty": 0,
 				"transformation": "rotate90"
 			},
 			{
+				"file": "tiles/0/2",
 				"tx": 0,
 				"ty": 0,
 				"transformation": "rotate180"
 			},
 			{
+				"file": "tiles/0/2",
 				"tx": 0,
 				"ty": 0,
 				"transformation": "rotate270"
@@ -57,9 +60,6 @@
 				"portalize": false,
 				"frames": [
 					{
-						"file": "tiles/1/5",
-						"tx": 1,
-						"ty": 0,
 						"collide": false,
 						"permeable": true
 					},
@@ -73,11 +73,7 @@
 				"file": "tiles/1/6",
 				"collide": false,
 				"permeable": true,
-				"frames": [{
-					"file": "tiles/1/6",
-					"tx": 1,
-					"ty": 0
-				}]
+				"frames": [{}]
 			},
 			{
 				"file": "tiles/1/7",
@@ -89,76 +85,28 @@
 				"file": "tiles/1/8",
 				"collide": false,
 				"permeable": true,
-				"frames": [
-					{
-						"file": "tiles/1/8",
-						"tx": 1,
-						"ty": 0
-					}, {}, {}, {}, {}, {}
-				]
+				"frames": [{}, {}, {}, {}, {}, {}]
 			},
 			{
 				"file": "tiles/1/8",
-				"tx": 0,
-				"ty": 0,
 				"collide": false,
 				"permeable": true,
 				"transformation": "rotate90",
-				"frames": [
-					{
-						"file": "tiles/1/8",
-						"tx": 1,
-						"ty": 0,
-						"transformation": "rotate90"
-					},
-					{"transformation": "rotate90"},
-					{"transformation": "rotate90"},
-					{"transformation": "rotate90"},
-					{"transformation": "rotate90"},
-					{"transformation": "rotate90"}
-				]
+				"frames": [{}, {}, {}, {}, {}, {}]
 			},
 			{
 				"file": "tiles/1/8",
-				"tx": 0,
-				"ty": 0,
 				"collide": false,
 				"permeable": true,
 				"transformation": "rotate180",
-				"frames": [
-					{
-						"file": "tiles/1/8",
-						"tx": 1,
-						"ty": 0,
-						"transformation": "rotate180"
-					},
-					{"transformation": "rotate180"},
-					{"transformation": "rotate180"},
-					{"transformation": "rotate180"},
-					{"transformation": "rotate180"},
-					{"transformation": "rotate180"}
-				]
+				"frames": [{}, {}, {}, {}, {}, {}]
 			},
 			{
 				"file": "tiles/1/8",
-				"tx": 0,
-				"ty": 0,
 				"collide": false,
 				"permeable": true,
 				"transformation": "rotate270",
-				"frames": [
-					{
-						"file": "tiles/1/8",
-						"tx": 1,
-						"ty": 0,
-						"transformation": "rotate270"
-					},
-					{"transformation": "rotate270"},
-					{"transformation": "rotate270"},
-					{"transformation": "rotate270"},
-					{"transformation": "rotate270"},
-					{"transformation": "rotate270"}
-				]
+				"frames": [{}, {}, {}, {}, {}, {}]
 			}
 		],
 		[

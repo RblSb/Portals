@@ -1,25 +1,36 @@
 package game;
 
-import kha.Framebuffer;
+import kha.Canvas;
+import kha.graphics2.Graphics;
 import kha.input.KeyCode;
 import kha.Image;
+import kha.Assets;
 import kha.math.Vector2;
-import editor.Editor;
-import Screen.Pointer;
-import Types.IPoint;
-import Types.Rect;
+//import editor.Editor;
+import khm.tilemap.Tilemap;
+import khm.tilemap.Tileset;
+import khm.tilemap.Tilemap.GameMap;
+import khm.tilemap.Tilemap.GameMapJSON;
+import khm.Screen;
+import khm.Screen.Pointer;
+import khm.Settings;
+import khm.Lang;
+import khm.Types.IPoint;
+import khm.Types.Rect;
+
+private typedef Editor = Game;
 
 typedef AutoSave = {
-	map:Lvl.GameMap,
+	map:GameMap,
 	player:IPoint
 }
 
 class Game extends Screen {
-	
+
 	//var backbuffer = Image.create(1, 1);
 	var player:Player;
 	var touch:Touch;
-	var lvl:Lvl;
+	var tilemap:Tilemap;
 	var editor:Editor;
 	var viewMode = false;
 	var autoSave:AutoSave;
@@ -27,65 +38,84 @@ class Game extends Screen {
 	var currentLevel:Int;
 	var levelProgress:Int;
 	var particlers:Array<Particler> = [];
-	
+
 	public function new() {
 		super();
 	}
-	
+
 	public function init(?editor:Editor):Void {
 		this.editor = editor;
-		lvl = new Lvl();
-		lvl.init();
+		tilemap = new Tilemap();
+		var tileset = new Tileset(Assets.blobs.tiles_json);
+		tilemap.init(tileset);
 		textField.init(scale);
 		player = new Player();
-		
+
 		var sets = Settings.read();
 		currentLevel = -1;
 		levelProgress = sets.levelProgress;
 	}
-	
+
 	public function playCompany():Void {
 		currentLevel = levelProgress;
-		lvl.loadMap(levelProgress);
+		loadMapId(levelProgress);
 		newGame();
 	}
-	
+
 	public function playLevel(id:Int):Void {
 		currentLevel = id;
-		lvl.loadMap(id);
+		loadMapId(id);
 		newGame();
 	}
-	
-	public function playCustomLevel(map:Lvl.GameMap):Void {
-		lvl.loadCustomMap(map);
+
+	public function playCustomLevel(map:GameMapJSON):Void {
+		tilemap.loadJSON(map);
 		newGame();
 	}
-	
+
+	public static inline function isMapExists(id:Int):Bool {
+		return Assets.blobs.get("maps_" + id + "_json") != null;
+	}
+
+	public function loadMapId(id:Int):Void {
+		var data = Assets.blobs.get("maps_" + id + "_json");
+		tilemap.loadJSON(haxe.Json.parse(data.toString()));
+	}
+
+	function getPlayer():IPoint {
+		for (iy in 0...tilemap.map.h) {
+			for (ix in 0...tilemap.map.w) {
+				if (tilemap.getTile(2, ix, iy).id == 1) return {x: ix, y: iy};
+			}
+		}
+		return {x: 0, y: 0};
+	}
+
 	function newGame():Void {
-		player.init(this, lvl);
+		player.init(this, tilemap);
 		restart();
 		autoSave = {
-			map: lvl.copyMap(lvl.map),
-			player: lvl.getPlayer()
+			map: tilemap.copyMap(tilemap.map),
+			player: getPlayer()
 		};
-		if (Screen.touch) {
+		if (Screen.isTouch) {
 			touch = new Touch(this);
 			touch.init();
 		}
-		
+
 		onResize();
 	}
-	
+
 	public function restart():Void {
-		var spawn = lvl.getPlayer();
+		var spawn = getPlayer();
 		if (autoSave != null) {
 			spawn.x = autoSave.player.x;
 			spawn.y = autoSave.player.y;
-			lvl.loadCustomMap(autoSave.map);
+			tilemap.loadMap(autoSave.map);
 		}
 		var rect = player.rect;
-		rect.x = spawn.x * lvl.tsize + (lvl.tsize - rect.w)/2;
-		rect.y = spawn.y * lvl.tsize + (lvl.tsize - rect.h);
+		rect.x = spawn.x * tilemap.tileSize + (tilemap.tileSize - rect.w)/2;
+		rect.y = spawn.y * tilemap.tileSize + (tilemap.tileSize - rect.h);
 		if (player.speed.x != 0)
 			player.speed.x = Math.abs(player.speed.x)/player.speed.x;
 		if (player.speed.y != 0)
@@ -96,39 +126,39 @@ class Game extends Screen {
 		textField.close(true);
 		for (i in keys.keys()) keys[i] = false;
 	}
-	
+
 	public function checkpoint(x:Int, y:Int):Void {
 		if (autoSave != null) {
 			if (autoSave.player.x == x || autoSave.player.y == y) return;
 		}
 		autoSave = {
-			map: lvl.copyMap(lvl.map),
+			map: tilemap.copyMap(tilemap.map),
 			player: {x: x, y: y}
 		};
 	}
-	
+
 	public function showText(x:Int, y:Int):Void {
-		var obj = lvl.getObject(2, x, y);
+		var obj = tilemap.getObject(2, x, y, "text");
 		if (obj == null) return;
-		var tf = Reflect.field(obj.text, Lang.iso);
+		var tf = Reflect.field(obj.data.text, Lang.iso);
 		if (tf == null) {
 			if (Lang.iso == "en") return;
-			tf = Reflect.field(obj.text, "en");
+			tf = Reflect.field(obj.data.text, "en");
 			if (tf == null) return;
 		}
-		
+
 		textField.show(tf.text, tf.author);
-		lvl.setTile(2, x, y, 0);
+		tilemap.setTileId(2, x, y, 0);
 	}
-	
+
 	public function closeText():Void {
 		textField.close();
 	}
-	
+
 	public function showEditor():Void {
 		editor.show();
 	}
-	
+
 	public function transferParticles(particler:Particler):Void {
 		if (particler.particles.length == 0) return;
 		var p:Particler = particler;
@@ -141,15 +171,15 @@ class Game extends Screen {
 		}
 		particlers.push(p);
 	}
-	
+
 	public function levelComplete():Void {
 		if (editor != null) {
 			showEditor();
 			return;
 		}
-		
+
 		currentLevel++;
-		if (currentLevel > levelProgress && Lvl.exists(currentLevel)) {
+		if (currentLevel > levelProgress && isMapExists(currentLevel)) {
 			autoSave = null;
 			levelProgress = currentLevel;
 			Settings.set({
@@ -159,69 +189,67 @@ class Game extends Screen {
 			playCompany();
 			return;
 		}
-		
+
 		var menu = new Menu();
 		menu.show();
 		menu.init(1);
 	}
-	
+
 	override function onKeyDown(key:KeyCode):Void {
 		if (key == KeyCode.Q) {
 			viewMode = !viewMode;
-			
+
 		} else if (key == KeyCode.Zero) {
 			setScale(1);
-			
+
 		} else if (key == 189 || key == KeyCode.HyphenMinus) {
 			if (scale > 1) setScale(scale - 1);
-			
+
 		} else if (key == KeyCode.Equals) {
 			if (scale < 9) setScale(scale + 1);
-			
+
 		} else if (key == KeyCode.Escape) {
 			var menu = new PauseMenu(this, editor);
 			menu.show();
 			menu.init();
 		}
 	}
-	
+
 	override function onMouseDown(p:Pointer):Void {
-		if (Screen.touch) if (touch.onDown(p)) return;
+		if (Screen.isTouch) if (touch.onDown(p)) return;
 		player.onMouseDown(p);
 	}
-	
+
 	override function onMouseMove(p:Pointer):Void {
-		if (Screen.touch) if (touch.onMove(p)) return;
+		if (Screen.isTouch) if (touch.onMove(p)) return;
 	}
-	
+
 	override function onMouseUp(p:Pointer):Void {
-		if (Screen.touch) if (touch.onUp(p)) return;
+		if (Screen.isTouch) if (touch.onUp(p)) return;
 		player.onMouseUp(p);
 	}
-	
+
 	override function onResize():Void {
-		var newScale = Std.int(Utils.getScale());
+		tilemap.camera.w = Screen.w;
+		tilemap.camera.h = Screen.h;
+		//TODO fix scale
+		var newScale = Std.int(1);
 		if (newScale < 1) newScale = 1;
-		
+
 		if (newScale != scale) setScale(newScale);
-		else {
-			lvl.resize();
-		}
-		if (Screen.touch) touch.resize();
-		
-		//if (Std.int(w/scale) != backbuffer.width || Std.int(h/scale) != backbuffer.height)
-			//backbuffer = Image.createRenderTarget(Std.int(w/scale), Std.int(h/scale));
+		if (Screen.isTouch) touch.resize();
 	}
-	
+
 	override function onRescale(scale:Float):Void {
-		lvl.rescale(scale);
+		//TODO tilemap scale
+		tilemap.scale = scale;
 		player.rescale(scale);
 		Portal.rescaleAll();
 		textField.rescale(scale);
 		for (particler in particlers)
 			particler.rescale(scale);
 	}
-	
+
 	override function onUpdate():Void {
 		player.update();
 		Sprite.updateAll();
@@ -232,15 +260,15 @@ class Game extends Screen {
 		}
 		if (!viewMode) {
 			player.keys();
-			lvl.setCamera(player.rect);
+			tilemap.camera.center(player.rect);
 		} else viewModeCamera();
 	}
-	
+
 	function viewModeCamera():Void {
-		if (lvl.w * lvl.tsize < Screen.w
-			&& lvl.h * lvl.tsize < Screen.h) viewMode = false;
-		
-		var sx = 0.0, sy = 0.0, s = lvl.tsize/5;
+		if (tilemap.w * tilemap.tileSize < Screen.w
+			&& tilemap.h * tilemap.tileSize < Screen.h) viewMode = false;
+
+		var sx = 0.0, sy = 0.0, s = tilemap.tileSize/5;
 		if (keys[KeyCode.Left] || keys[KeyCode.A]) sx += s;
 		if (keys[KeyCode.Right] || keys[KeyCode.D]) sx -= s;
 		if (keys[KeyCode.Up] || keys[KeyCode.W]) sy += s;
@@ -248,43 +276,51 @@ class Game extends Screen {
 		if (keys[KeyCode.Shift]) {
 			sx *= 2; sy *= 2;
 		}
-		if (sx != 0) lvl.camera.x += sx;
-		if (sy != 0) lvl.camera.y += sy;
-		lvl.updateCamera();
+		if (sx != 0) tilemap.camera.x += sx;
+		if (sy != 0) tilemap.camera.y += sy;
 	}
-	
-	override function onRender(frame:Framebuffer):Void {
+
+	override function onRender(frame:Canvas):Void {
 		var g = frame.g2;
 		g.begin(true, 0xFFBDC3CD);
-		lvl.drawLayer(g, 0);
+		tilemap.drawLayer(g, 0);
 		Portal.renderAllEffects(g);
 		player.draw(g);
-		lvl.drawLayer(g, 1);
+		tilemap.drawLayer(g, 1);
 		Portal.renderAll(g);
-		for (p in particlers) p.draw(g, lvl.camera.x, lvl.camera.y);
+		for (p in particlers) p.draw(g, tilemap.camera.x, tilemap.camera.y);
 		textField.draw(g);
-		
+
 		if (viewMode) {
 			g.color = 0xFFFFFFFF;
 			g.drawRect(1, 0, Screen.w-1, Screen.h-2, scale);
 		}
-		if (Screen.touch) touch.draw(g);
-		
+		if (Screen.isTouch) touch.draw(g);
+
 		#if debug
 		for (p in pointers) {
-			if (!p.used) continue;
+			if (!p.isActive) continue;
 			if (p.isDown) g.color = 0xFFFF0000;
 			else g.color = 0xFFFFFFFF;
 			g.fillRect(p.x-1, p.y-1, 2, 2);
 		}
+		drawTileset(g);
 		#end
-		debugScreen(g);
 		g.end();
-		
-		/*var g = frame.g2;
-		g.begin();
-		Scaler.scale(backbuffer, frame, System.screenRotation);
-		g.end();*/
 	}
-	
+
+
+	function drawTileset(g:Graphics):Void {
+		#if debug
+		var tileset = @:privateAccess tilemap.tileset;
+		var scale = 1;
+		var x = tilemap.camera.w - tileset.img.width * scale;
+		g.drawScaledImage(
+			tileset.img, x, 0,
+			tileset.img.width * scale,
+			tileset.img.height * scale
+		);
+		#end
+	}
+
 }

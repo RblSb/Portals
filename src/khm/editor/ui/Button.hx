@@ -1,12 +1,9 @@
-package ui;
+package khm.editor.ui;
 
 import haxe.Constraints.Function;
 import kha.graphics2.Graphics;
 import kha.Image;
-import kha.math.FastMatrix3;
 import kha.input.KeyCode;
-import kha.Color;
-import khm.Types.Point;
 import khm.Types.Rect;
 import khm.Screen;
 import khm.Screen.Pointer;
@@ -60,7 +57,7 @@ class Button {
 			g.fillRect(rect.x, rect.y, rect.w, rect.h);
 		}
 		g.color = 0xFFFFFFFF;
-		g.rotate(ang * Math.PI/180, rect.x + rect.w/2, rect.y + rect.h/2);
+		g.rotate(ang * Math.PI / 180, rect.x + rect.w / 2, rect.y + rect.h / 2);
 		if (img != null) g.drawScaledImage(img, rect.x, rect.y, rect.w, rect.h);
 		g.transformation = Utils.matrix();
 	}
@@ -68,18 +65,19 @@ class Button {
 	public static function onDown(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
 		var result = false;
 		//down pressed button
-		for (b in buttons) if (b.check(p.x, p.y)) {
-			for (i in b.keys) {
-				screen.onKeyDown(i);
-				screen.keys[i] = true;
+		for (b in buttons)
+			if (b.check(p.x, p.y)) {
+				for (i in b.keys) {
+					screen.onKeyDown(i);
+					screen.keys[i] = true;
+				}
+				if (b.onDownFunc != null) b.onDownFunc(p);
+				b.isDown = true;
+				result = true;
+				/*if (b.clickMode) {
+					onUp(screen, buttons, p);
+				}*/
 			}
-			if (b.onDownFunc != null) b.onDownFunc(p);
-			b.isDown = true;
-			result = true;
-			/*if (b.clickMode) {
-				onUp(screen, buttons, p);
-			}*/
-		}
 
 		return result;
 	}
@@ -108,13 +106,14 @@ class Button {
 	public static function onUp(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
 		if (!isActive(buttons, p)) return false;
 		//up latest pressed button
-		for (b in buttons) if (b.check(p.x, p.y)) {
-			for (i in b.keys) {
-				screen.onKeyUp(i);
-				screen.keys[i] = false;
+		for (b in buttons)
+			if (b.check(p.x, p.y)) {
+				for (i in b.keys) {
+					screen.onKeyUp(i);
+					screen.keys[i] = false;
+				}
+				b.isDown = false;
 			}
-			b.isDown = false;
-		}
 
 		return true;
 	}
@@ -126,10 +125,11 @@ class Button {
 
 	static inline function isActive(buttons:Array<Button>, p:Pointer):Bool {
 		var active = false; //if you pressed buttons
-		for (b in buttons) if (b.check(p.startX, p.startY)) {
-			active = true;
-			break;
-		}
+		for (b in buttons)
+			if (b.check(p.startX, p.startY)) {
+				active = true;
+				break;
+			}
 		return active;
 	}
 

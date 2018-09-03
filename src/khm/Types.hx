@@ -1,4 +1,4 @@
-package;
+package khm;
 
 typedef Point = {
 	x:Float,
@@ -21,16 +21,23 @@ typedef ISize = {
 }
 
 typedef Rect = {
-	>Point,
-	>Size, //need , compiler bug
+	> Point,
+	> Size,
 }
 
 typedef IRect = {
-	>IPoint,
-	>ISize,
+	> IPoint,
+	> ISize,
 }
 
 typedef Range = {
 	min:Float,
 	max:Float
+}
+
+enum Position {
+	TOP;
+	BOTTOM;
+	LEFT;
+	RIGHT;
 }

@@ -2,7 +2,7 @@ package;
 
 import haxe.Constraints.Function;
 //import haxe.Timer;
-import kha.Framebuffer;
+import kha.Canvas;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
 import kha.System;
@@ -12,14 +12,19 @@ import kha.Color;
 import kha.Font;
 import kha.SuperString;
 import game.Game;
-import editor.Editor;
+//import editor.Editor;
 import kha.math.Vector2;
-import Screen.Pointer;
-import Types.Point;
-import Types.Rect;
+import khm.Screen;
+import khm.Screen.Pointer;
+import khm.Settings;
+import khm.Lang;
+import khm.Types.Point;
+import khm.Types.Rect;
+
+private typedef Editor = Menu;
 
 class Menu extends Screen {
-	
+
 	var items:Array<MenuButton> = [];
 	var font:Font;
 	var fontSize:Int;
@@ -29,11 +34,11 @@ class Menu extends Screen {
 	//var checker:Timer;
 	var confirm:{yes:Function, no:Function};
 	var githubLink = "https://github.com/RblSb/Portals";
-	
+
 	public function new() {
 		super();
 	}
-	
+
 	public function init(id=0):Void {
 		var x = (- Assets.images.menubg.width + 47);
 		var y = (- Assets.images.menubg.height + 28);
@@ -44,11 +49,11 @@ class Menu extends Screen {
 			lifeTime: 60, delay: 45, color: 0xFF000000,
 			count: 50, scale: bgscale
 		});
-		
+
 		font = Assets.fonts.OpenSans_Regular;
 		setMenu(id);
 	}
-	
+
 	inline function createMenu(id:Int):Array<String> {
 		var menu:Array<String> = [];
 		switch(id) {
@@ -106,7 +111,7 @@ class Menu extends Screen {
 				"/"+Lang.get("music") + ch + 0, //sets.musicVolume,
 				"/"+Lang.get("control_type") + ch + sets.controlType,
 				Lang.get("language") + ch + Lang.iso.toUpperCase(),
-				"/"+Lang.get("touch") + ch + state(Screen.touch),
+				"/"+Lang.get("touch") + ch + state(Screen.isTouch),
 				Lang.get("other"),
 				Lang.get("back")
 			];
@@ -128,12 +133,12 @@ class Menu extends Screen {
 		}
 		return menu;
 	}
-	
+
 	inline function state(flag:Bool):String {
 		if (flag) return Lang.get("on");
 		return Lang.get("off");
 	}
-	
+
 	function choose(id:Int):Void {
 		switch(current) {
 		case -1: //areYouSure
@@ -191,7 +196,7 @@ class Menu extends Screen {
 				game.playLevel(id);
 				//if (id == items.length-2) game.playCompany();
 			}
-			
+
 		case 2: //Editor
 			switch(id) {
 			case 0:
@@ -212,11 +217,12 @@ class Menu extends Screen {
 					}
 				}
 				Settings.set({lang: Lang.iso});
+				Graphics.fontGlyphs = Lang.fontGlyphs;
 				setMenu(3);
 			case 3:
 				/*if (checker == null) checker = Timer.delay(function() {
-					Screen.touch = !Screen.touch;
-					Settings.set({touchMode: Screen.touch});
+					Screen.isTouch = !Screen.isTouch;
+					Settings.set({touchMode: Screen.isTouch});
 					setMenu(3);
 					checker = null;
 				}, 100);*/
@@ -236,16 +242,16 @@ class Menu extends Screen {
 			case 3: System.loadUrl(githubLink);
 			case 4: setMenu(0);
 			}
-			
+
 		default: setMenu(0);
 		}
 	}
-	
+
 	inline function areYouSure(yes:Function, no:Function):Void {
 		confirm = {yes: yes, no: no};
 		setMenu(-1);
 	}
-	
+
 	/*inline function newGame():Void {
 		var isNew = Settings.read().levelProgress < 2;
 		if (isNew) {
@@ -258,7 +264,7 @@ class Menu extends Screen {
 		game.init();
 		game.playCompany();
 	}*/
-	
+
 	/*inline function levelSelectMenu():Void {
 		var menu:Array<String> = ["training"];
 		var i = 1;
@@ -270,11 +276,11 @@ class Menu extends Screen {
 		menu.push("back");
 		setCustomMenu(13, menu);
 	}*/
-	
+
 	function setMenu(id:Int):Void {
 		current = id;
 		var menu = createMenu(current);
-		
+
 		items = [];
 		for (i in 0...menu.length) {
 			var item = Lang.get(menu[i]);
@@ -282,7 +288,7 @@ class Menu extends Screen {
 		}
 		onResize();
 	}
-	
+
 	/*function setCustomMenu(id:Int, menu:Array<String>):Void {
 		current = id;
 
@@ -293,7 +299,7 @@ class Menu extends Screen {
 		}
 		onResize();
 	}*/
-	
+
 	override function onMouseMove(p:Pointer):Void {
 		var state = true;
 		for (i in items) {
@@ -303,10 +309,10 @@ class Menu extends Screen {
 			} else i.isOver = false;
 		}
 	}
-	
+
 	override function onMouseDown(p:Pointer):Void {
 		onMouseMove(p);
-		if (Screen.touch) return;
+		if (Screen.isTouch) return;
 		for (i in 0...items.length) {
 			if (items[i].check(p.x, p.y)) {
 				choose(i);
@@ -314,9 +320,9 @@ class Menu extends Screen {
 			}
 		}
 	}
-	
+
 	override function onMouseUp(p:Pointer):Void {
-		if (!Screen.touch) return;
+		if (!Screen.isTouch) return;
 		for (i in 0...items.length) {
 			if (items[i].check(p.x, p.y)) {
 				choose(i);
@@ -324,7 +330,7 @@ class Menu extends Screen {
 			}
 		}
 	}
-	
+
 	override function onResize():Void {
 		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
 		fontSize = Std.int(min/10/2)*2;
@@ -333,7 +339,7 @@ class Menu extends Screen {
 			var w = font.width(fontSize, item.text);
 			if (maxW < w) maxW = w;
 		}
-		
+
 		for (i in 0...items.length) {
 			var fh = font.height(fontSize);
 			var y = (Screen.h - items.length * fh) / 2 + i * fh;
@@ -347,42 +353,41 @@ class Menu extends Screen {
 		if (bgscale < 1) bgscale = 1;
 		particler.rescale(bgscale);
 	}
-	
+
 	override function onUpdate():Void {
 		particler.update();
 	}
-	
-	override function onRender(frame:Framebuffer):Void {
-		var g = frame.g2;
+
+	override function onRender(canvas:Canvas):Void {
+		var g = canvas.g2;
 		g.begin(true, 0xFFBDC3CD);
 		particler.draw(g, Screen.w, Screen.h);
 		drawBG(g);
 		drawMenu(g);
-		debugScreen(g);
 		g.end();
 	}
-	
+
 	inline function drawBG(g:Graphics):Void {
 		g.color = 0xFFFFFFFF;
 		var w = Assets.images.menubg.width * bgscale;
 		var h = Assets.images.menubg.height * bgscale;
 		g.drawScaledImage(Assets.images.menubg, Screen.w - w, Screen.h - h, w, h);
 	}
-	
+
 	inline function drawMenu(g:Graphics):Void {
 		for (i in items) i.draw(g);
 	}
-	
+
 }
 
 class MenuButton extends ui.Trigger {
-	
+
 	public var text:SuperString;
 	public var font:Font;
 	public var fontSize:Int;
 	public var isOver:Bool;
 	public var align:Int;
-	
+
 	public function new(text:String, font:Font, size:Int, ?p:Point, ?r:Rect, align=0) {
 		this.text = text;
 		this.font = font;
@@ -395,7 +400,7 @@ class MenuButton extends ui.Trigger {
 		}
 		super(r);
 	}
-	
+
 	public function draw(g:Graphics):Void {
 		if (text.substring(0, 1) == "/") {
 			drawInactive(g);
@@ -417,7 +422,7 @@ class MenuButton extends ui.Trigger {
 		var offx = alignment();
 		g.drawString(text, rect.x + offx, rect.y);
 	}
-	
+
 	public function drawInactive(g:Graphics):Void {
 		if (isOver) {
 			g.color = 0x88000000;
@@ -435,7 +440,7 @@ class MenuButton extends ui.Trigger {
 		var offx = alignment();
 		g.drawString(text.substring(1), rect.x + offx, rect.y);
 	}
-	
+
 	inline function alignment():Float {
 		var offx = 0.0;
 		switch(align) {
@@ -448,5 +453,5 @@ class MenuButton extends ui.Trigger {
 		}
 		return offx;
 	}
-	
+
 }

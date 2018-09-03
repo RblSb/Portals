@@ -1,4 +1,4 @@
-package ui;
+package khm.editor.ui;
 
 import haxe.Constraints.Function;
 import khm.Types.Rect;

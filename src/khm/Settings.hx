@@ -1,4 +1,4 @@
-package;
+package khm;
 
 import kha.Storage;
 import kha.StorageFile;
@@ -13,47 +13,47 @@ private typedef SettingsData = {
 }
 
 class Settings {
-	
-	static inline var v = 1;
+
+	static inline var VERSION = 1;
 	static var defaults:SettingsData = {
-		v: v,
+		v: VERSION,
 		levelProgress: 1,
 		controlType: 1
 	};
-	
+
 	public static function read():SettingsData {
 		var file = Storage.defaultFile();
 		var data:SettingsData = file.readObject();
 		data = checkData(data);
 		return data;
 	}
-	
+
 	public static function set(sets:SettingsData):Void {
 		var data = read();
-		
+
 		var fields = Reflect.fields(sets);
 		for (field in fields) {
 			var value = Reflect.field(sets, field);
 			Reflect.setField(data, field, value);
 		}
-		
+
 		write(data);
 	}
-	
+
 	public static function write(data:SettingsData):Void {
-		var file = Storage.defaultFile();
-		data.v = v;
+		var file:StorageFile = Storage.defaultFile();
+		data.v = VERSION;
 		file.writeObject(data);
 	}
-	
+
 	public static function reset():Void {
-		var data = checkData(null);
+		var data:SettingsData = checkData(null);
 		write(data);
 	}
-	
+
 	static inline function checkData(data:SettingsData):SettingsData {
-		if (data != null && data.v == v) return data;
+		if (data != null && data.v == VERSION) return data;
 		return defaults;
 	}
-	
+
 }

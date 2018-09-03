@@ -1,8 +1,8 @@
 package;
 
 import kha.math.Vector2;
-import Types.IPoint;
-import Types.Rect;
+import khm.Types.IPoint;
+import khm.Types.Rect;
 
 interface Body {
 	var rect:Rect;
