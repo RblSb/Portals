@@ -17,9 +17,8 @@ private typedef ParticleSets = {
 }
 
 private typedef ParticlerSets = {
-	>ParticleSets,
+	> ParticleSets,
 	count:Int,
-	?scale:Float,
 	?loop:Bool,
 	?w:Float,
 	?h:Float
@@ -30,14 +29,12 @@ class Particler {
 	public var particles:Array<Particle> = [];
 	public var rect:Rect;
 	public var lifeTime:Int;
-	public var scale:Float;
 	public var loop:Bool;
 
 	public function new(sets:ParticlerSets) {
 		rect = {x: sets.x, y: sets.y, w: 0, h: 0};
 		if (sets.w != null) rect.w = sets.w;
 		if (sets.h != null) rect.h = sets.h;
-		scale = sets.scale == null ? 1 : sets.scale;
 		loop = sets.loop == null ? true : sets.loop;
 		lifeTime = sets.lifeTime;
 
@@ -59,16 +56,6 @@ class Particler {
 
 	public function draw(g:Graphics, cx:Float, cy:Float):Void {
 		for (p in particles) p.draw(g, cx, cy);
-	}
-
-	public function rescale(newScale:Float):Void {
-		var diff = newScale / scale;
-		for (p in particles) p.rescale(diff);
-		rect.x *= diff;
-		rect.y *= diff;
-		rect.w *= diff;
-		rect.h *= diff;
-		scale = newScale;
 	}
 
 }
@@ -120,18 +107,11 @@ class Particle {
 		y = ctx.rect.y + Math.random() * ctx.rect.h;
 	}
 
-	public function rescale(diff:Float):Void {
-		x *= diff;
-		y *= diff;
-		speed = speed.mult(diff);
-		wobble = wobble.mult(diff);
-	}
-
 	public function draw(g:Graphics, cx:Float, cy:Float):Void {
 		if (delay > 0) return;
 		color.A = lifeTime / ctx.lifeTime;
 		g.color = color;
-		g.fillRect(x + cx, y + cy, ctx.scale, ctx.scale);
+		g.fillRect(x + cx, y + cy, 1, 1);
 	}
 
 }

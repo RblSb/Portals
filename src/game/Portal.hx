@@ -4,7 +4,7 @@ import kha.graphics2.Graphics;
 import kha.math.Vector2;
 import kha.Color;
 import Interfaces.Body;
-import khm.tilemap.Tilemap as Lvl;
+import khm.tilemap.Tilemap;
 import khm.Types.IPoint;
 import khm.Types.Point;
 import khm.Types.Rect;
@@ -13,7 +13,7 @@ import khm.utils.Collision;
 
 private typedef Insides = {
 	clones:Array<{
-		>Point,
+		> Point,
 		rotate:Float,
 		body:Body,
 		dir:Int
@@ -23,7 +23,7 @@ private typedef Insides = {
 class Portal {
 
 	var game:Game;
-	var lvl:Lvl;
+	var lvl:Tilemap;
 	var player:Player;
 	public static var colors = [0xFFFF8000, 0xFF0032FF];
 	var insides:Insides = { //to render
@@ -40,15 +40,14 @@ class Portal {
 	var tileSize(get, never):Int;
 	function get_tileSize() return lvl.tileSize;
 
-	public function new(game:Game, player:Player, lvl:Lvl, tile:IPoint, side:Int, type:Int) {
+	public function new(game:Game, player:Player, lvl:Tilemap, tile:IPoint, side:Int, type:Int) {
 		this.game = game;
 		this.player = player;
 		this.lvl = lvl;
-		oldScale = lvl.scale;
 
 		var tx = tile.x * tileSize;
 		var ty = tile.y * tileSize;
-		var wh = lvl.scale;
+		var wh = 1;
 		var sides:Array<Rect> = [
 			{x: tx, y: ty, w: tileSize, h: wh}, //top of tile
 			{x: tx, y: ty + tileSize-wh, w: tileSize, h: wh}, //bottom
@@ -70,13 +69,12 @@ class Portal {
 
 	inline function initParticles():Void {
 		var speed = sideVector(side);
-		var scale = lvl.scale;
 		particler = new Particler({
-			x: rect.x, y: rect.y, w: rect.w - scale, h: rect.h - scale,
-			speed: new Vector2(speed.x / 2 * scale, speed.y / 2 * scale),
-			wobble: new Vector2(speed.y / 2 * scale, speed.x / 2 * scale),
+			x: rect.x, y: rect.y, w: rect.w, h: rect.h,
+			speed: new Vector2(speed.x / 2, speed.y / 2),
+			wobble: new Vector2(speed.y / 2, speed.x / 2),
 			lifeTime: 30, color: colors[type],
-			count: 30, scale: scale
+			count: 30
 		});
 	}
 
@@ -100,7 +98,7 @@ class Portal {
 	}
 
 	function pushOut():Void {
-		var off = lvl.scale;
+		var off = 1;
 		for (i in insides.clones) {
 			var p = i.body.rect;
 			//if (!Utils.AABB2(p, rect)) continue;
@@ -112,21 +110,6 @@ class Portal {
 			}
 		}
 		insides.clones = [];
-	}
-
-	public static function rescaleAll():Void {
-		for (p in portals) p.rescale();
-		if (portals.length > 0) oldScale = portals[0].lvl.scale;
-	}
-
-	function rescale():Void {
-		rect = {
-			x: rect.x / oldScale * lvl.scale,
-			y: rect.y / oldScale * lvl.scale,
-			w: rect.w / oldScale * lvl.scale,
-			h: rect.h / oldScale * lvl.scale
-		}
-		particler.rescale(lvl.scale);
 	}
 
 	public static function collidePlayer(body:Body):Bool {
@@ -196,7 +179,7 @@ class Portal {
 
 	function effectMode(body:Body, out:Portal):Bool {
 		//var v = sideVector(out.side);
-		var off = lvl.scale;
+		var off = 1;
 		var ax = out.rect.x, ay = out.rect.y, rotate = 0.0, dir = -1;
 		switch(side) {
 		case 0:
@@ -348,7 +331,7 @@ class Portal {
 	}
 
 	inline function teleport(body:Body, out:Portal):Void {
-		var off = lvl.scale;
+		var off = 1;
 		var x = out.rect.x, y = out.rect.y;
 
 		if (out.side == 0) {
@@ -380,7 +363,7 @@ class Portal {
 			else if (side == 3) body.speed.x = Math.abs(body.speed.x);
 		}
 		if (side != 1 && out == 0) { //speed-up
-			var min = -lvl.scale * 4;
+			var min = -4;
 			if (body.speed.y > min) body.speed.y = min;
 			if (side == 2 || side == 3) body.speed.x = 0;
 		}
@@ -444,7 +427,7 @@ class Portal {
 			w: Screen.w, h: Screen.h
 		};
 		if (!Collision.aabb(rect, screen)) {
-			var size = Std.int(lvl.tileSize/8) * lvl.scale;
+			var size = Std.int(lvl.tileSize / 8);
 			var x = rect.x + lvl.camera.x - size/2 + rect.w/2;
 			var y = rect.y + lvl.camera.y - size/2 + rect.h/2;
 			if (x > Screen.w) x = Screen.w - size;

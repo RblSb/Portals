@@ -6,13 +6,11 @@ import kha.Image;
 import kha.Font;
 import kha.Assets;
 import kha.System;
-//import editor.Editor;
-import Menu.MenuButton;
+import khm.editor.Editor;
 import khm.Screen;
 import khm.Screen.Pointer;
 import khm.Lang;
-
-private typedef Editor = {}
+import Menu.MenuButton;
 
 class PauseMenu extends Screen {
 
@@ -20,12 +18,14 @@ class PauseMenu extends Screen {
 	var editor:Editor;
 	var inited:Bool;
 	var items:Array<MenuButton> = [];
+	var bg:Image;
 	public static var font:Font;
 	public static var fontSize:Int;
 
-	public function new(game:Game, ?editor:Editor) {
+	public function new(game:Game, ?editor:Editor, bg:Image) {
 		this.game = game;
 		this.editor = editor;
+		this.bg = bg;
 		super();
 	}
 
@@ -128,17 +128,16 @@ class PauseMenu extends Screen {
 
 	override function onRender(frame:Canvas):Void {
 		var g = frame.g2;
-		g.begin(false, 0x0);
-
-		if (!inited) {
-			g.color = 0x77000000;
-			g.fillRect(0, 0, Screen.w, Screen.h);
-			inited = true;
-		}
+		g.begin(true, 0xFFFFFFFF);
+		g.color = 0xFFFFFFFF;
+		g.fillRect(0, 0, Screen.w, Screen.h);
+		g.drawImage(bg, 0, 0);
+		g.color = 0x40000000;
+		g.fillRect(0, 0, Screen.w, Screen.h);
 
 		var fh = font.height(fontSize);
 		var last = items.length - 1;
-		g.color = 0x05000000;
+		g.color = 0x40000000;
 		g.fillRect(
 			0, items[0].rect.y - fh/8,
 			items[last].rect.x + items[last].rect.w + fh/16,

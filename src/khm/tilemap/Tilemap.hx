@@ -175,10 +175,17 @@ class Tilemap {
 
 		for (iy in sy...ey) {
 			for (ix in sx...ex) {
-				var id = map.layers[l][iy][ix].id;
+				var tile = map.layers[l][iy][ix];
+				var id = tile.id;
 				if (id > 0) {
 					var layer = map.layers[l][iy][ix].layer;
-					id += tileset.layersOffsets[layer];
+					if (tile.frame > 0) {
+						id = tileset.layersOffsets[layer];
+						id += tileset.tilesLengths[layer];
+						id += tileset.sprites[layer][tile.id].firstFrame + tile.frame;
+					} else {
+						id += tileset.layersOffsets[layer];
+					}
 					g.drawSubImage(
 						tileset.img,
 						ix * tileSize + camX,

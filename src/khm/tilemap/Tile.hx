@@ -6,6 +6,7 @@ class Tile {
 
 	public var layer(default, set):Int;
 	public var id(default, set):Int;
+	public var frame(default, null):Int;
 	public var props(default, null):Props;
 	public var frameCount(get, never):Int;
 	var tilemap:Tilemap;
@@ -35,6 +36,7 @@ class Tile {
 	public function set(layer:Int, id:Int, ?props:Props):Void {
 		this.layer = layer;
 		this.id = id;
+		frame = 0;
 		if (props != null) setProps(props);
 	}
 
@@ -46,17 +48,13 @@ class Tile {
 		this.props = @:privateAccess tilemap.tileset.props[layer][id];
 	}
 
-	public function getFrame():Int {
-		var tileset = @:privateAccess tilemap.tileset;
-		var first = tileset.sprites[layer][id].firstFrame;
-		if (id < first) return 0;
-		return id - first - 1;
-	}
-
 	public function setFrame(frame:Int):Void {
+		this.frame = frame;
+
 		var tileset = @:privateAccess tilemap.tileset;
-		if (frame == 0) id = tileset.sprites[layer][id].id;
-		else id = tileset.sprites[layer][id].firstFrame + frame - 1;
+		var frameId = tileset.tilesLengths[layer];
+		frameId += tileset.sprites[layer][id].firstFrame + frame;
+		this.props = tileset.props[layer][frameId];
 	}
 
 	public function setPrevFrame():Void {

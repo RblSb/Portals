@@ -7,6 +7,9 @@ import kha.Assets;
 import khm.Settings;
 import khm.Screen;
 import khm.Lang;
+import khm.editor.Editor;
+import khm.tilemap.Tilemap;
+import game.Game;
 
 class Loader {
 
@@ -22,14 +25,28 @@ class Loader {
 
 		var sets = Settings.read();
 		Screen.init({isTouch: sets.touchMode});
-		if (sets.lang == null) Lang.init();
-		else Lang.set(sets.lang);
+		Lang.loadFolder("langs");
+		Lang.set(sets.lang);
 		Graphics.fontGlyphs = Lang.fontGlyphs;
 
-		var game = new game.Game();
+		Editor.testMap = function(editor:Editor, tilemap:Tilemap) {
+			var game = new Game();
+			game.show();
+			game.init(editor);
+			var map = tilemap.toJSON(tilemap.map);
+			game.playCustomLevel(map);
+		};
+
+		Editor.exit = function() {
+			var menu = new Menu();
+			menu.show();
+			menu.init();
+		};
+
+		var game = new Game();
 		game.show();
 		game.init();
-		game.playLevel(1);
+		game.playLevel(0);
 
 		/*var editor = new editor.Editor();
 		editor.show();

@@ -1,67 +1,79 @@
 package khm;
 
+import kha.System;
+import kha.Assets;
+import kha.Blob;
+import haxe.Json;
+
+private typedef LangMap = Map<String, String>;
+
 class Lang {
 
-	static var EN:Map<String, String> = [
-		"loading" => "Loading...",
-		"yes" => "Yes",
-		"no" => "No",
-		"on" => "On",
-		"off" => "Off",
-	];
-	static var RU:Map<String, String> = [
-		"loading" => "Загрузка...",
-		"yes" => "Да",
-		"no" => "Нет",
-		"on" => "Вкл.",
-		"off" => "Откл.",
-	];
-	static var current(default, null):Map<String, String>;
-	public static var langs(default, null) = ["en", "ru"];
+	public static var ids(default, null):Array<String>;
+	public static var langs(default, null):Array<LangMap>;
 	public static var iso(default, null):String;
 	public static var fontGlyphs(default, null):Array<Int>;
+	static var current(default, null):LangMap;
+	static var basic(default, null):LangMap;
 
-	public static function init():Void {
-		var iso = "en";
-		#if kha_html5
-		iso = js.Browser.navigator.language;
-		#elseif java
-		iso = java.util.Locale.getDefault().getLanguage();
-		#elseif flash
-		iso = flash.system.Capabilities.language;
-		#end
-		var exist = false;
-		for (lang in langs)
-			if (lang == iso) exist = true;
+	public static function loadFolder(folder:String):Void {
+		ids = [];
+		langs = [];
+		var fields = Reflect.fields(Assets.blobs);
+		for (field in fields) {
+			if (field.indexOf(folder) == -1) continue;
+			var ereg = new EReg(folder + "_(.*)_json$", "");
+			if (!ereg.match(field)) continue;
 
-		if (!exist) iso = "en";
-		iso = iso.substring(0, 2);
-		set(iso);
-	}
-
-	public static function get(id:String):String {
-		var s = current[id];
-		if (s == null) {
-			s = EN[id];
-			if (s == null) return id;
+			var id = ereg.matched(1);
+			ids.push(id);
+			var file = Assets.blobs.get(field);
+			var data = Json.parse(file.toString());
+			var lang = new LangMap();
+			var keys = Reflect.fields(data);
+			for (key in keys) {
+				lang[key] = Reflect.field(data, key);
+			}
+			langs.push(lang);
 		}
-		return s;
 	}
 
-	public static function set(id:String):Void {
-		iso = id;
+	public static function set(?code:String, def = "en"):Void {
+		iso = code == null ? System.language : code;
+		var defId = -1;
+		var id = -1;
+		for (i in 0...ids.length) {
+			var lang = ids[i];
+			if (lang == def) defId = i;
+			if (lang == iso) id = i;
+		}
+
+		if (defId == -1) throw 'default language file ($def) not found';
+		if (id == -1) id = defId;
+		current = langs[id];
+		basic = langs[defId];
+		setGlyphs();
+	}
+
+	static function setGlyphs():Void {
+		var code = iso.substr(0, 2);
 		fontGlyphs = [];
 		for (i in 32...256) {
 			fontGlyphs.push(i);
 		}
-
-		switch (iso) {
-			case "ru": current = RU;
+		switch (code) {
+			case "ru":
 				for (i in 1024...1106) {
 					fontGlyphs.push(i);
 				}
-			default: current = EN;
+			default:
 		}
+	}
+
+	public static function get(id:String):String {
+		if (current[id] != null) return current[id];
+		if (basic[id] != null) return basic[id];
+		return id;
 	}
 
 	public static inline function fastGet(id:String):String {

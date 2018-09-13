@@ -22,7 +22,7 @@ class Data {
 	public static function initProps(tile:TSProps):Void {
 		if (tile.collide == null) tile.collide = false;
 		if (tile.portalize == null) tile.portalize = false;
-		if (tile.permeable == null) tile.permeable = false;
+		if (tile.permeable == null) tile.permeable = true;
 		if (tile.type == null) tile.type = tile.collide ? "FULL" : "NONE";
 		else tile.type = Slope.fromString(cast tile.type);
 	}

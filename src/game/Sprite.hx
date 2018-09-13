@@ -1,11 +1,11 @@
 package game;
 
-import khm.tilemap.Tilemap as Lvl;
+import khm.tilemap.Tilemap;
 import khm.Types.IPoint;
 
 class Sprite {
 
-	var lvl:Lvl;
+	var lvl:Tilemap;
 	static var sprites:Array<Sprite> = [];
 	static inline var delayMax = 1;
 	var delay = 0;
@@ -18,7 +18,7 @@ class Sprite {
 	var reverse:Bool;
 	var reset:Bool;
 
-	public function new(lvl:Lvl, layer:Int, tile:IPoint, type:Int, start:Int, end:Int, reverse=false, reset=false) {
+	public function new(lvl:Tilemap, layer:Int, tile:IPoint, type:Int, start:Int, end:Int, reverse = false, reset = false) {
 		this.lvl = lvl;
 		this.layer = layer;
 		this.tile = tile;

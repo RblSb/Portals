@@ -6,7 +6,7 @@ import kha.input.KeyCode;
 import kha.Image;
 import kha.Assets;
 import kha.math.Vector2;
-//import editor.Editor;
+import khm.editor.Editor;
 import khm.tilemap.Tilemap;
 import khm.tilemap.Tileset;
 import khm.tilemap.Tilemap.GameMap;
@@ -17,8 +17,6 @@ import khm.Settings;
 import khm.Lang;
 import khm.Types.IPoint;
 import khm.Types.Rect;
-
-private typedef Editor = Game;
 
 typedef AutoSave = {
 	map:GameMap,
@@ -203,13 +201,15 @@ class Game extends Screen {
 			setScale(1);
 
 		} else if (key == 189 || key == KeyCode.HyphenMinus) {
-			if (scale > 1) setScale(scale - 1);
+			if (scale > 1) setScale(scale - 0.5);
 
-		} else if (key == KeyCode.Equals) {
-			if (scale < 9) setScale(scale + 1);
+		} else if (key == 187 || key == KeyCode.Equals) {
+			if (scale < 9) setScale(scale + 0.5);
 
 		} else if (key == KeyCode.Escape) {
-			var menu = new PauseMenu(this, editor);
+			var bg = Image.createRenderTarget(Screen.w, Screen.h);
+			onRender(bg);
+			var menu = new PauseMenu(this, editor, bg);
 			menu.show();
 			menu.init();
 		}
@@ -232,22 +232,17 @@ class Game extends Screen {
 	override function onResize():Void {
 		tilemap.camera.w = Screen.w;
 		tilemap.camera.h = Screen.h;
-		//TODO fix scale
-		var newScale = Std.int(1);
+		if (true) return;
+		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
+		var newScale = Std.int(min / 500 * 2) / 2;
 		if (newScale < 1) newScale = 1;
-
 		if (newScale != scale) setScale(newScale);
 		if (Screen.isTouch) touch.resize();
 	}
 
 	override function onRescale(scale:Float):Void {
-		//TODO tilemap scale
 		tilemap.scale = scale;
-		player.rescale(scale);
-		Portal.rescaleAll();
-		textField.rescale(scale);
-		for (particler in particlers)
-			particler.rescale(scale);
+		// textField.rescale(scale);
 	}
 
 	override function onUpdate():Void {
@@ -293,10 +288,17 @@ class Game extends Screen {
 
 		if (viewMode) {
 			g.color = 0xFFFFFFFF;
-			g.drawRect(1, 0, Screen.w-1, Screen.h-2, scale);
+			g.drawRect(1, 0, Screen.w-1, Screen.h-2);
 		}
 		if (Screen.isTouch) touch.draw(g);
 
+		//tilemap.drawLayer(g, 2);
+		//drawTileset(g);
+		//drawPointers(g);
+		g.end();
+	}
+
+	function drawPointers(g:Graphics):Void {
 		#if debug
 		for (p in pointers) {
 			if (!p.isActive) continue;
@@ -304,17 +306,15 @@ class Game extends Screen {
 			else g.color = 0xFFFFFFFF;
 			g.fillRect(p.x-1, p.y-1, 2, 2);
 		}
-		drawTileset(g);
 		#end
-		g.end();
 	}
-
 
 	function drawTileset(g:Graphics):Void {
 		#if debug
 		var tileset = @:privateAccess tilemap.tileset;
 		var scale = 1;
 		var x = tilemap.camera.w - tileset.img.width * scale;
+		g.color = 0xFFFFFFFF;
 		g.drawScaledImage(
 			tileset.img, x, 0,
 			tileset.img.width * scale,

@@ -3,14 +3,14 @@ package game;
 import kha.graphics2.Graphics;
 import kha.Color;
 import khm.utils.Collision;
-import khm.tilemap.Tilemap as Lvl;
+import khm.tilemap.Tilemap;
 import khm.Types.IPoint;
 import khm.Types.Point;
 
 class AimMode { //TODO remake it to use in turrels too
 
 	var player:Player;
-	var lvl:Lvl;
+	var lvl:Tilemap;
 	var tileSize(get, never):Int;
 	function get_tileSize() return lvl.tileSize;
 
@@ -22,7 +22,7 @@ class AimMode { //TODO remake it to use in turrels too
 	public var tile:IPoint;
 	public var side:Int;
 
-	public function new(player:Player, lvl:Lvl) {
+	public function new(player:Player, lvl:Tilemap) {
 		this.player = player;
 		this.lvl = lvl;
 	}
@@ -40,8 +40,7 @@ class AimMode { //TODO remake it to use in turrels too
 				sideLine.p.x + lvl.camera.x,
 				sideLine.p.y + lvl.camera.y,
 				sideLine.p2.x + lvl.camera.x,
-				sideLine.p2.y + lvl.camera.y,
-				lvl.scale
+				sideLine.p2.y + lvl.camera.y
 			);
 		}
 		#if debug
@@ -56,8 +55,7 @@ class AimMode { //TODO remake it to use in turrels too
 			aimLine.p.x + lvl.camera.x,
 			aimLine.p.y + lvl.camera.y,
 			aimLine.p2.x + lvl.camera.x,
-			aimLine.p2.y + lvl.camera.y,
-			lvl.scale
+			aimLine.p2.y + lvl.camera.y
 		);
 	}
 

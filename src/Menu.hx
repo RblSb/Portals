@@ -1,7 +1,6 @@
 package;
 
 import haxe.Constraints.Function;
-//import haxe.Timer;
 import kha.Canvas;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
@@ -12,7 +11,7 @@ import kha.Color;
 import kha.Font;
 import kha.SuperString;
 import game.Game;
-//import editor.Editor;
+import khm.editor.Editor;
 import kha.math.Vector2;
 import khm.Screen;
 import khm.Screen.Pointer;
@@ -21,14 +20,11 @@ import khm.Lang;
 import khm.Types.Point;
 import khm.Types.Rect;
 
-private typedef Editor = Menu;
-
 class Menu extends Screen {
 
 	var items:Array<MenuButton> = [];
 	var font:Font;
 	var fontSize:Int;
-	var bgscale = 1.0;
 	var particler:Particler;
 	var current:Int;
 	//var checker:Timer;
@@ -47,7 +43,7 @@ class Menu extends Screen {
 			speed: new Vector2(0, -0.5),
 			wobble: new Vector2(0.5, 0),
 			lifeTime: 60, delay: 45, color: 0xFF000000,
-			count: 50, scale: bgscale
+			count: 50
 		});
 
 		font = Assets.fonts.OpenSans_Regular;
@@ -208,10 +204,10 @@ class Menu extends Screen {
 		case 3: //Settings
 			switch(id) {
 			case 2:
-				for (i in 0...Lang.langs.length) {
-					var lang = Lang.langs[i];
+				for (i in 0...Lang.ids.length) {
+					var lang = Lang.ids[i];
 					if (lang == Lang.iso) {
-						var next = i+1 < Lang.langs.length ? Lang.langs[i+1] : Lang.langs[0];
+						var next = i + 1 < Lang.ids.length ? Lang.ids[i + 1] : Lang.ids[0];
 						Lang.set(next);
 						break;
 					}
@@ -349,9 +345,6 @@ class Menu extends Screen {
 			items[i].rect.h = fh;
 			items[i].fontSize = fontSize;
 		}
-		bgscale = Std.int(min/200);
-		if (bgscale < 1) bgscale = 1;
-		particler.rescale(bgscale);
 	}
 
 	override function onUpdate():Void {
@@ -369,8 +362,8 @@ class Menu extends Screen {
 
 	inline function drawBG(g:Graphics):Void {
 		g.color = 0xFFFFFFFF;
-		var w = Assets.images.menubg.width * bgscale;
-		var h = Assets.images.menubg.height * bgscale;
+		var w = Assets.images.menubg.width;
+		var h = Assets.images.menubg.height;
 		g.drawScaledImage(Assets.images.menubg, Screen.w - w, Screen.h - h, w, h);
 	}
 

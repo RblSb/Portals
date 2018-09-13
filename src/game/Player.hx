@@ -3,11 +3,14 @@ package game;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
 import kha.math.Vector2;
+import kha.math.FastMatrix3;
+import kha.FastFloat;
 import kha.Image;
 import kha.System;
 import kha.Assets;
 import Interfaces.Body;
-import khm.tilemap.Tilemap as Lvl;
+import khm.tilemap.Tilemap;
+import khm.tilemap.Tile;
 import khm.Screen;
 import khm.Screen.Pointer;
 import khm.utils.Easing;
@@ -37,12 +40,8 @@ private typedef Consts = {
 class Player implements Body {
 
 	var game:Game;
-	var lvl:Lvl;
-	var origSprite:Image; //for rescaling
-	var origSpriteH:Int;
-	var origFrameW:Array<Int>;
-	var origSize:Size;
-	var origConsts:Consts = {
+	var lvl:Tilemap;
+	var consts:Consts = {
 		friction: 0.20,
 		gravity: 0.2,
 		jump: -5,
@@ -51,7 +50,6 @@ class Player implements Body {
 		maxRunSX: 4,
 		maxSpeed: 200
 	}
-	var oldTsize:Int;
 	var tileSize(get, never):Int;
 	function get_tileSize() return lvl.tileSize;
 	var sprite:Image;
@@ -61,7 +59,7 @@ class Player implements Body {
 	var frame = 0;
 	var frameDelay = 0;
 	var frameDelayMax = 5;
-	var frameSets:Map<String, Array<Int>> = new Map();
+	var frameSets = new Map<String, Array<Int>>();
 	var frameType:String;
 	var frameTypeId:Int;
 
@@ -74,29 +72,22 @@ class Player implements Body {
 	var aimMode:AimMode;
 	var aimType = 0;
 	var aRotate = 0.0; //easing
-	var consts:Consts;
 
 	public function new() {}
 
-	public function init(game:Game, lvl:Lvl):Void {
+	public function init(game:Game, lvl:Tilemap):Void {
 		this.game = game;
 		this.lvl = lvl;
 		aimMode = new AimMode(this, lvl);
 
-		oldTsize = tileSize;
-		var sprite = makeSet();
-		spriteH = origSpriteH = sprite.h;
+		var sprite:IRect = makeSet();
+		spriteH = sprite.h;
 
-		origSize = {
-			w: frameW[1],
-			h: origSpriteH - 1
-		};
 		rect = {
 			x: 0, y: 0,
-			w: origSize.w,
-			h: origSize.h
+			w: frameW[1],
+			h: spriteH - 1
 		}
-		consts = Reflect.copy(origConsts);
 	}
 
 	function makeSet():IRect {
@@ -108,13 +99,13 @@ class Player implements Body {
 			if (h < img.height) h = img.height;
 			w += img.width;
 		}
-		origSprite = Image.createRenderTarget(w, h * 2);
-		var g = origSprite.g2;
+		sprite = Image.createRenderTarget(w, h * 2);
+		var g = sprite.g2;
 		g.begin(true, 0x0);
 
 		var offset = 0;
 		var curSet = "none";
-		origFrameW = [0];
+		frameW = [0];
 		for (i in 0...json.frames.length) {
 			var img = Assets.images.get("player_"+i);
 			g.transformation = Utils.matrix();
@@ -123,7 +114,7 @@ class Player implements Body {
 			g.drawImage(img, 0, h);
 
 			var frame = json.frames[i];
-			origFrameW.push(offset + img.width);
+			frameW.push(offset + img.width);
 			offset += img.width;
 
 			if (frame.set != null) {
@@ -134,42 +125,11 @@ class Player implements Body {
 		}
 		g.end();
 
-		var len = origFrameW.length;
-		origFrameW[len] = origSprite.width - origFrameW[len-1];
-		frameW = origFrameW.copy();
-		sprite = origSprite;
+		var len = frameW.length;
+		frameW[len] = sprite.width - frameW[len-1];
 		clone = Image.createRenderTarget(tileSize, tileSize);
 
 		return {x: 0, y: 0, w: w, h: h};
-	}
-
-	public function rescale(scale:Float):Void {
-		speed = speed.div(consts.jump);
-		var fields = Reflect.fields(origConsts);
-		for (field in fields) {
-			var value:Float = Reflect.field(origConsts, field);
-			Reflect.setField(consts, field, value * scale);
-		}
-
-		var w = Std.int(origSprite.width * scale);
-		var h = Std.int(origSprite.height * scale);
-		spriteH = Std.int(origSpriteH * scale);
-		sprite = Image.createRenderTarget(w, h);
-		var g = sprite.g2;
-		g.begin(true, 0x0);
-		g.drawScaledImage(origSprite, 0, 0, w, h);
-		g.end();
-
-		clone = Image.createRenderTarget(tileSize, tileSize);
-
-		rect.x = rect.x/oldTsize * tileSize;
-		rect.y = rect.y/oldTsize * tileSize;
-		rect.w = origSize.w * scale;
-		rect.h = origSize.h * scale;
-		speed = speed.mult(consts.jump);
-		for (i in 0...origFrameW.length)
-			frameW[i] = Std.int(origFrameW[i] * scale);
-		oldTsize = tileSize;
 	}
 
 	public function update():Void {
@@ -300,7 +260,7 @@ class Player implements Body {
 		switch(id) {
 		case 3: game.restart();
 		case 5: //door
-			if (dir == 0) { //x-motion
+			if (tile.frame == 0 && dir == 0) { //x-motion
 				if (speed.x > 0) { //right
 					if (rect.x + rect.w - speed.x < ix * tileSize + tileSize/2)
 					if (rect.x + rect.w + speed.x > ix * tileSize + tileSize/2) {
@@ -341,13 +301,13 @@ class Player implements Body {
 					var end = Std.int(tile.frameCount / 3);
 					switch(id) {
 					case 8, 10:
-						if (obj.data.speed.x != 0) speed.x = obj.data.speed.x * lvl.scale;
+						if (obj.data.speed.x != 0) speed.x = obj.data.speed.x;
 						if (id == 8 && speed.y > obj.data.speed.y ||
-							id == 10 && speed.y < obj.data.speed.y) speed.y = obj.data.speed.y * lvl.scale;
+							id == 10 && speed.y < obj.data.speed.y) speed.y = obj.data.speed.y;
 					case 9, 11:
 						if (id == 9 && speed.x < obj.data.speed.x ||
-							id == 11 && speed.x > obj.data.speed.x) speed.x = obj.data.speed.x * lvl.scale;
-						if (obj.data.speed.y != 0) speed.y = obj.data.speed.y * lvl.scale;
+							id == 11 && speed.x > obj.data.speed.x) speed.x = obj.data.speed.x;
+						if (obj.data.speed.y != 0) speed.y = obj.data.speed.y;
 					}
 					var s = (id == 8 || id == 10) ? obj.data.speed.x : obj.data.speed.y;
 					if (id == 8 || id == 9) {
@@ -358,7 +318,7 @@ class Player implements Body {
 						if (s > 0) {start += end; end *= 2;}
 						else if (s < 0) {start += end * 2; end *= 3;}
 					}
-					if (Math.abs(s) < 5 * lvl.scale) end--;
+					if (Math.abs(s) < 5) end--;
 
 					Sprite.add(new Sprite(lvl, 1, {x: ix, y: iy}, id, start, end, true));
 				}
@@ -418,31 +378,35 @@ class Player implements Body {
 	inline function action():Void {
 		var x = Std.int((rect.x + rect.w/2) / tileSize);
 		var y = Std.int((rect.y + rect.h/2) / tileSize);
+		var tile = lvl.getTile(1, x, y);
 		var id = lvl.getTile(1, x, y).id;
-		//TODO
-		//if (id == 6 || id == lvl.getSpriteEnd(1, 6)) button(x, y, id);
+		if (id == 6) button(x, y, tile);
 	}
 
-	inline function button(x:Int, y:Int, id:Int):Void {
-		// if (id == 6) lvl.setTileAnim(1, x, y, 6, 1);
-		// else if (id == lvl.getSpriteEnd(1, 6)) lvl.setTileAnim(1, x, y, 6, 0);
-		// var obj = lvl.getObject(1, x, y);
-		// if (obj == null) return;
+	inline function button(x:Int, y:Int, tile:Tile):Void {
+		if (tile.frame == 0) tile.setFrame(tile.frameCount);
+		else if (tile.frame == tile.frameCount) tile.setFrame(0);
+		var obj = lvl.getObject(1, x, y, "button");
+		if (obj == null) return;
 
-		// if (obj.doors != null) for (i in obj.doors) door(i);
+		var doors:Array<Any> = obj.data.doors;
+		if (doors != null) {
+			for (i in doors) door(i);
+		}
 	}
 
 	inline function door(p:IPoint):Void {
-		// var id = lvl.getTile(1, p.x, p.y).id;
-		// var last = lvl.getSpriteEnd(1, 5);
-		// if (id == last) {
-		// 	id = lvl.getSpriteLength(1, 5);
-		// 	last = 0;
-		// } else {
-		// 	id = 0;
-		// 	last = lvl.getSpriteLength(1, 5);
-		// }
-		// Sprite.add(new Sprite(lvl, 1, p, 5, id, last));
+		var tile = lvl.getTile(1, p.x, p.y);
+		var frame = tile.frame;
+		var last = tile.frameCount;
+		if (frame == last) {
+			frame = tile.frameCount;
+			last = 0;
+		} else {
+			frame = 0;
+			last = tile.frameCount;
+		}
+		Sprite.add(new Sprite(lvl, 1, p, 5, frame, last));
 	}
 
 	public function onMouseDown(p:Pointer):Void {
@@ -498,30 +462,44 @@ class Player implements Body {
 		return new Portal(game, this, lvl, aimMode.tile, aimMode.side, aimType);
 	}
 
+	var tempMatrix = FastMatrix3.identity();
+
 	public function draw(g:Graphics):Void {
 		//g.drawImage(sprite, 0, 0);
 		//g.drawRect(rect.x + lvl.camera.x, rect.y + lvl.camera.y, rect.w, rect.h);
 		aimMode.draw(g, aimType);
 
 		var sy = dir == 1 ? 0 : spriteH;
-		var w = frameW[frame+1] - frameW[frame];
-		var offx = rect.w/2 - w/2;
+		var w = frameW[frame + 1] - frameW[frame];
+		var offx = rect.w / 2 - w / 2;
 		var x = Math.round(rect.x + lvl.camera.x + offx);
 		var y = Math.round(rect.y + lvl.camera.y - (spriteH - rect.h));
 		g.color = 0xFFFFFFFF;
-		g.rotate(aRotate * Math.PI/180, x + rect.w/2, y + rect.h/2);
+		tempMatrix.setFrom(g.transformation);
+		g.transformation = g.transformation.multmat(
+			FastMatrix3.identity()
+			//FastMatrix3.translation(lvl.camera.x, lvl.camera.y)
+		).multmat(
+			rotation(aRotate * Math.PI / 180, x + rect.w / 2, y + rect.h / 2)
+		);
 		g.drawSubImage(
 			sprite,
 			x, y,
 			frameW[frame], sy,
 			frameW[frame+1] - frameW[frame], spriteH
 		);
-		g.transformation = Utils.matrix();
+		g.transformation = tempMatrix;
+	}
+
+	inline function rotation(angle: FastFloat, centerx: FastFloat, centery: FastFloat): FastMatrix3 {
+	return FastMatrix3.translation(centerx, centery)
+		.multmat(FastMatrix3.rotation(angle))
+		.multmat(FastMatrix3.translation(-centerx, -centery));
 	}
 
 	public function setClone(px:Float, py:Float, ang:Float, dir:Int, tile:IPoint):Void {
-		var w = frameW[frame+1] - frameW[frame];
-		var offx = rect.w/2 - w/2;
+		var w = frameW[frame + 1] - frameW[frame];
+		var offx = rect.w / 2 - w / 2;
 		var x = Math.round(px + offx);
 		var y = Math.round(py - (spriteH - rect.h));
 		var sx = frameW[frame];
@@ -583,8 +561,8 @@ class Player implements Body {
 				else setAnimType("stand");
 			}
 		} else {
-			if (speed.y < -lvl.scale) setAnimType("jump");
-			else if (speed.y > lvl.scale) setAnimType("fall");
+			if (speed.y < -1) setAnimType("jump");
+			else if (speed.y > 1) setAnimType("fall");
 			else setAnimType("soar");
 		}
 		playAnimType();

@@ -161,11 +161,7 @@ class Editor extends Screen {
 			isGridEnabled = !isGridEnabled;
 
 		} else if (key == KeyCode.Zero) {
-			/*hide();
-			var game = new Game();
-			game.show();
-			game.init(this);
-			game.playCustomLevel(tilemap.map);*/
+			testMap(this, tilemap);
 
 		} else if (key - KeyCode.One >= 0 && key - KeyCode.One <= 9) {
 			var newLayer = key - KeyCode.One;
@@ -182,11 +178,13 @@ class Editor extends Screen {
 			var confirm = js.Browser.window.confirm;
 			if (!confirm(Lang.get("reset_warning") + " " + Lang.get("are_you_sure"))) return;
 			#end
-			//var menu = new Menu();
-			//menu.show();
-			//menu.init();
+			exit();
 		}
 	}
+
+	public static dynamic function testMap(editor:Editor, tilemap:Tilemap):Void {}
+
+	public static dynamic function exit():Void {}
 
 	override function onKeyUp(key:KeyCode):Void {
 		if (key == KeyCode.Space) {
