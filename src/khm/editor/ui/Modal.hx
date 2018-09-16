@@ -16,6 +16,8 @@ class Modal {
 			document.body.removeChild(modal);
 			document.body.removeChild(style);
 			e.stopPropagation();
+			var canvas = document.querySelector('canvas');
+			canvas.focus();
 		}
 		function onCancel(e:Event):Void {
 			onClose(e);

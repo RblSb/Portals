@@ -44,6 +44,7 @@ class Game extends Screen {
 	public function init(?editor:Editor):Void {
 		this.editor = editor;
 		tilemap = new Tilemap();
+		CustomData.init();
 		var tileset = new Tileset(Assets.blobs.tiles_json);
 		tilemap.init(tileset);
 		textField.init(scale);

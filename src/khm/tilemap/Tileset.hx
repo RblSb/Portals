@@ -7,6 +7,7 @@ import kha.Blob;
 import kha.Assets;
 import kha.Image;
 import khm.Macro;
+import khm.Macro.EnumAbstractTools;
 import khm.tilemap.Data.Props;
 
 /** Tileset in JSON **/
@@ -34,7 +35,7 @@ typedef TSProps = {
 	var FlipY = "flipY";
 
 	public static inline function getIndex(t:TSTransformation):Int {
-		return Macro.EnumAbstractTools.getIndex(t);
+		return EnumAbstractTools.getIndex(t);
 	}
 }
 

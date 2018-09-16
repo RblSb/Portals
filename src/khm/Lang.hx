@@ -2,7 +2,6 @@ package khm;
 
 import kha.System;
 import kha.Assets;
-import kha.Blob;
 import haxe.Json;
 
 private typedef LangMap = Map<String, String>;

@@ -5,6 +5,7 @@ project.addAssets('res/**', {
 	name: '{dir}/{name}'
 });
 project.addSources('src');
+project.addDefine('khmProps=game.CustomData.TileProps');
 //project.addDefine('debug');
 //project.addParameter('-dce full');
 

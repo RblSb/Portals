@@ -99,8 +99,8 @@ class Editor extends Screen {
 		]);
 	}
 
-	//@:allow(Hand)
-	public function moveCamera(speed:Point):Void {
+	@:allow(khm.editor.Hand)
+	function moveCamera(speed:Point):Void {
 		tilemap.camera.x += speed.x;
 		tilemap.camera.y += speed.y;
 		updateCamera();
