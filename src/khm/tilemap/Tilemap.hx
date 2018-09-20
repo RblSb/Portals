@@ -19,7 +19,7 @@ typedef GameMapJSON = {
 	floatObjects:Array<FloatObject>
 }
 
-typedef GameMap = { //map format
+typedef GameMap = { // map format
 	?version:Int,
 	?name:String,
 	w:Int,
@@ -30,7 +30,7 @@ typedef GameMap = { //map format
 }
 
 typedef GameObject = {
-	//grid-based
+	// grid-based
 	type:String,
 	layer:Int,
 	x:Int,
@@ -155,10 +155,10 @@ class Tilemap {
 	}
 
 	public function drawLayer(g:Graphics, l:Int):Void {
-		//screen in tiles
+		// screen in tiles
 		var screenW = Math.ceil(camera.w / tileSize) + 1;
 		var screenH = Math.ceil(camera.h / tileSize) + 1;
-		//camera in tiles
+		// camera in tiles
 		var ctx = -Std.int(camera.x / tileSize);
 		var cty = -Std.int(camera.y / tileSize);
 		var ctw = ctx + screenW;
@@ -166,7 +166,7 @@ class Tilemap {
 		var camX = Std.int(camera.x * scale) / scale;
 		var camY = Std.int(camera.y * scale) / scale;
 
-		//tiles offset
+		// tiles offset
 		var sx = ctx < 0 ? 0 : ctx;
 		var sy = cty < 0 ? 0 : cty;
 		var ex = ctw > map.w ? map.w : ctw;

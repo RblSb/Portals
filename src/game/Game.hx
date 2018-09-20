@@ -262,7 +262,10 @@ class Game extends Screen {
 
 	function viewModeCamera():Void {
 		if (tilemap.w * tilemap.tileSize < Screen.w
-			&& tilemap.h * tilemap.tileSize < Screen.h) viewMode = false;
+			&& tilemap.h * tilemap.tileSize < Screen.h) {
+			viewMode = false;
+			return;
+		}
 
 		var sx = 0.0, sy = 0.0, s = tilemap.tileSize/5;
 		if (keys[KeyCode.Left] || keys[KeyCode.A]) sx += s;
@@ -272,8 +275,20 @@ class Game extends Screen {
 		if (keys[KeyCode.Shift]) {
 			sx *= 2; sy *= 2;
 		}
-		if (sx != 0) tilemap.camera.x += sx;
-		if (sy != 0) tilemap.camera.y += sy;
+		var camera = tilemap.camera;
+		if (sx != 0) camera.x += sx;
+		if (sy != 0) camera.y += sy;
+
+		var w = Screen.w;
+		var h = Screen.h;
+		var pw = tilemap.map.w * tilemap.tileSize;
+		var ph = tilemap.map.h * tilemap.tileSize;
+		if (camera.x > 0) camera.x = 0;
+		if (camera.x < w - pw) camera.x = w - pw;
+		if (camera.y > 0) camera.y = 0;
+		if (camera.y < h - ph) camera.y = h - ph;
+		if (pw < w) camera.x = w / 2 - pw / 2;
+		if (ph < h) camera.y = h / 2 - ph / 2;
 	}
 
 	override function onRender(frame:Canvas):Void {

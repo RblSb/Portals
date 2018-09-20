@@ -21,7 +21,7 @@ typedef TSProps = {
 	?file:String,
 	?transformation:TSTransformation,
 	?frames:Array<TSProps>,
-	?tx:Int, //grid-locked cords
+	?tx:Int, // grid-locked cords
 	?ty:Int,
 	?x:Int,
 	?y:Int
@@ -115,12 +115,12 @@ private class TilesetGenerator {
 
 		tileSize = json.tileSize;
 		var layersLength = layers.length;
-		var layersOffsets = [0]; //offsets in layers range
-		var tilesLengths:Array<Int> = []; //layers tiles length
+		var layersOffsets = [0]; // offsets in layers range
+		var tilesLengths:Array<Int> = []; // layers tiles length
 		var sprites:Array<Array<TSSprite>> = [
 			for (layer in layers) []
 		];
-		props = [ //props for every tile/frame
+		props = [ // props for every tile/frame
 			for (layer in layers) []
 		];
 
@@ -134,7 +134,7 @@ private class TilesetGenerator {
 
 		for (l in 0...layersLength) {
 			var layer = layers[l];
-			//empty tile properties for every layer
+			// empty tile properties for every layer
 			addProps(l, layer.shift());
 			var tilesN = 0;
 
@@ -145,7 +145,7 @@ private class TilesetGenerator {
 
 			tilesLengths.push(tilesN);
 
-			//draw sprite frames after all layer tiles
+			// draw sprite frames after all layer tiles
 			var spritesN = 0;
 			var spriteOffset = 0;
 
@@ -166,7 +166,7 @@ private class TilesetGenerator {
 				}
 			}
 
-			//save layer offset
+			// save layer offset
 			var prev = layersOffsets[layersOffsets.length - 1];
 			layersOffsets.push(prev + tilesN + spritesN);
 		}

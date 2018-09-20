@@ -14,20 +14,20 @@ import kha.System;
 import kha.Font;
 
 typedef Pointer = {
-	//pointer id (0 - 9)
+	// pointer id (0 - 9)
 	id:Int,
-	//initial cords of pressing
+	// initial cords of pressing
 	startX:Int,
 	startY:Int,
 	x:Int,
 	y:Int,
-	//last pointer speed
+	// last pointer speed
 	moveX:Int,
 	moveY:Int,
-	//button type (for mouse)
+	// button type (for mouse)
 	type:Int,
 	isDown:Bool,
-	//if pointer already used
+	// if pointer already used
 	isActive:Bool
 }
 
@@ -39,8 +39,8 @@ private typedef ScreenSets = {
 /** Сlass for unifying mouse/touch events and setup events automatically **/
 class Screen {
 
-	public static var screen:Screen; //current screen
-	public static var w(default, null):Int; //for resize event
+	public static var screen:Screen; // current screen
+	public static var w(default, null):Int; // for resize event
 	public static var h(default, null):Int;
 	public static var isTouch(default, null) = false;
 	public static var samplesPerPixel(default, null) = 1;
@@ -240,7 +240,7 @@ class Screen {
 		onRescale(scale);
 	}
 
-	//functions for override
+	// functions for override
 
 	function onRescale(scale:Float):Void {}
 	function onResize():Void {}

@@ -5,7 +5,7 @@ import khm.Screen.Pointer;
 
 interface Tool {
 
-	//function setActive():Void;
+	// function setActive():Void;
 	function clearHistory():Void;
 	function undo():Void;
 	function redo():Void;

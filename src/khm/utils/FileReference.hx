@@ -81,7 +81,7 @@ class FileReference {
 		document.body.removeChild(a);
 		js.html.URL.revokeObjectURL(url);
 		#else
-		//TODO select path and write file
+		// TODO select path and write file
 		#end
 	}
 
@@ -97,7 +97,7 @@ class FileReference {
 		);
 		g.putImageData(imgData, 0, 0);
 		var url = canvas.toDataURL("image/png");
-		//document.body.innerHTML = '<img src="'+url+'"/>';
+		// document.body.innerHTML = '<img src="'+url+'"/>';
 		var a = document.createElement("a");
 		untyped a.download = name + ".png";
 		untyped a.href = url;

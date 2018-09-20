@@ -10,7 +10,7 @@ class Macro {
 	public static function build(propsType:String):ComplexType {
 		var defines = Context.getDefines();
 		var path = defines["khmProps"];
-		if (path == null) { //use default type
+		if (path == null) { // use default type
 			path = Context.getLocalModule() + '.$propsType';
 		}
 		var pack = path.split(".");

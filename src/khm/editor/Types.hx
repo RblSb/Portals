@@ -14,5 +14,5 @@ typedef History = {
 typedef ArrHistory = {
 	layer:Int,
 	rect:IRect,
-	tiles:Array<Array<Int>> //TODO objs
+	tiles:Array<Array<Int>> // TODO objs
 }

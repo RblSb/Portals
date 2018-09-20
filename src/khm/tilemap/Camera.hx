@@ -51,7 +51,7 @@ class Camera {
 
 }
 
-private class Screen { //TODO use camera
+private class Screen { // TODO use camera
 
 	public static var w(get, never):Int;
 	public static var h(get, never):Int;

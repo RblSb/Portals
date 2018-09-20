@@ -82,7 +82,7 @@ class FillRect implements Tool {
 				start = end = null;
 				return;
 			}
-			//else clear area
+			// else clear area
 			tile = 0;
 		}
 		end = {

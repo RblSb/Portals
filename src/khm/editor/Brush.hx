@@ -35,7 +35,7 @@ class Brush implements Tool {
 		if (hid == -1) return;
 		var h = h1[hid];
 
-		h2.push({ //save current state
+		h2.push({ // save current state
 			layer: h.layer,
 			x: h.x,
 			y: h.y,
@@ -43,11 +43,11 @@ class Brush implements Tool {
 			objs: lvl.getObjects(h.layer, h.x, h.y)
 		});
 
-		//return previous state
+		// return previous state
 		lvl.setTileId(h.layer, h.x, h.y, h.tile);
 		lvl.setObjects(h.layer, h.x, h.y, h.objs);
 
-		//trace(h.obj);
+		// trace(h.obj);
 		h1.pop();
 	}
 
@@ -80,7 +80,7 @@ class Brush implements Tool {
 		var old = lvl.getTile(layer, x, y).id;
 		if (old == tile) return;
 
-		if (p.type == 1) { //pipette
+		if (p.type == 1) { // pipette
 			editor.tile = old;
 			return;
 		}
@@ -95,8 +95,8 @@ class Brush implements Tool {
 		// 	trace(lvl.map.objects);
 		// 	return;
 		// }
-		//newObj.x = x;
-		//newObj.y = y;
+		// newObj.x = x;
+		// newObj.y = y;
 		lvl.setObjects(layer, x, y, [newObj]);
 	}
 

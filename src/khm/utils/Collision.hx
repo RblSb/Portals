@@ -24,7 +24,7 @@ class Collision {
 
 		for (polygon in polygons) {
 			for (i in 0...polygon.length) {
-				//get points for normal
+				// get points for normal
 				var i2 = (i + 1) % polygon.length;
 				var p1 = polygon[i];
 				var p2 = polygon[i2];

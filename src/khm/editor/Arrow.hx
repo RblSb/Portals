@@ -48,7 +48,7 @@ class Arrow implements Tool {
 
 	function action(layer:Int, x:Int, y:Int, tile:Int):Void {
 		var objs = tilemap.getObjects(layer, x, y);
-		if (objs.length == 0) { //check other layers
+		if (objs.length == 0) { // check other layers
 			for (i in 0...tilemap.map.layers.length) {
 				layer = i;
 				objs = tilemap.getObjects(layer, x, y);

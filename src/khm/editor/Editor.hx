@@ -320,7 +320,7 @@ class Editor extends Screen {
 		#if kha_html5
 		FileReference.saveJSON(name, Json.stringify(data));
 		#else
-		//TODO select path and write file
+		// TODO select path and write file
 		#end
 	}
 
@@ -328,7 +328,7 @@ class Editor extends Screen {
 		#if kha_html5
 		FileReference.browse(onFileLoad, false);
 		#else
-		//TODO browse path
+		// TODO browse path
 		#end
 	}
 
