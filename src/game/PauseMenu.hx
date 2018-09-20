@@ -50,7 +50,7 @@ class PauseMenu extends Screen {
 	}
 
 	override function onResize():Void {
-		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
+		var min = Math.min(Screen.w, Screen.h);
 		fontSize = Std.int(min/10/2)*2;
 		var maxW = 0.0;
 		for (item in items) {

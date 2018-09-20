@@ -13,6 +13,7 @@ import kha.SuperString;
 import game.Game;
 import khm.editor.Editor;
 import kha.math.Vector2;
+import kha.math.FastMatrix3;
 import khm.Screen;
 import khm.Screen.Pointer;
 import khm.Settings;
@@ -50,7 +51,7 @@ class Menu extends Screen {
 		setMenu(id);
 	}
 
-	inline function createMenu(id:Int):Array<String> {
+	function createMenu(id:Int):Array<String> {
 		var menu:Array<String> = [];
 		switch(id) {
 		case -1:
@@ -156,7 +157,7 @@ class Menu extends Screen {
 				//setMenu(2);
 			case 2: setMenu(3);
 			case 3: setMenu(4);
-			case 4: System.requestShutdown();
+			case 4: System.stop();
 			}
 		case 1: //Game Menu
 			switch(id) {
@@ -328,7 +329,7 @@ class Menu extends Screen {
 	}
 
 	override function onResize():Void {
-		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
+		var min = Math.min(Screen.w, Screen.h);
 		fontSize = Std.int(min/10/2)*2;
 		var maxW = 0.0;
 		for (item in items) {
@@ -354,17 +355,27 @@ class Menu extends Screen {
 	override function onRender(canvas:Canvas):Void {
 		var g = canvas.g2;
 		g.begin(true, 0xFFBDC3CD);
-		particler.draw(g, Screen.w, Screen.h);
 		drawBG(g);
 		drawMenu(g);
 		g.end();
 	}
 
-	inline function drawBG(g:Graphics):Void {
+	var transformation = FastMatrix3.identity();
+
+	function drawBG(g:Graphics):Void {
+		transformation.setFrom(g.transformation);
+		var min = Math.min(Screen.w, Screen.h);
+		var scale = Std.int(min / 250);
+		if (scale < 1) scale = 1;
+		var sw = Screen.w / scale;
+		var sh = Screen.h / scale;
+		g.transformation = FastMatrix3.scale(scale, scale);
+		particler.draw(g, sw, sh);
 		g.color = 0xFFFFFFFF;
 		var w = Assets.images.menubg.width;
 		var h = Assets.images.menubg.height;
-		g.drawScaledImage(Assets.images.menubg, Screen.w - w, Screen.h - h, w, h);
+		g.drawScaledImage(Assets.images.menubg, sw - w, sh - h, w, h);
+		g.transformation = transformation;
 	}
 
 	inline function drawMenu(g:Graphics):Void {
@@ -395,7 +406,7 @@ class MenuButton extends ui.Trigger {
 	}
 
 	public function draw(g:Graphics):Void {
-		if (text.substring(0, 1) == "/") {
+		if (text.substr(0, 1) == "/") {
 			drawInactive(g);
 			return;
 		}
@@ -431,20 +442,20 @@ class MenuButton extends ui.Trigger {
 		g.font = font;
 		g.fontSize = fontSize;
 		var offx = alignment();
-		g.drawString(text.substring(1), rect.x + offx, rect.y);
+		g.drawString(text.substr(1), rect.x + offx, rect.y);
 	}
 
-	inline function alignment():Float {
-		var offx = 0.0;
+	function alignment():Float {
 		switch(align) {
 		case 1: //center
 			var w = font.width(fontSize, text);
-			offx = (rect.w - w) / 2;
+			return (rect.w - w) / 2;
 		case 2: //right
 			var w = font.width(fontSize, text);
-			offx = (rect.w - w);
+			return rect.w - w;
+		default:
+			return 0;
 		}
-		return offx;
 	}
 
 }

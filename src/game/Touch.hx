@@ -35,16 +35,10 @@ class Touch {
 	}
 
 	public function init():Void {
-		rescale();
+		//size = Std.int(mainSize * game.scale);
+		size = mainSize;
 		initImages();
 		initButtons();
-	}
-
-	inline function rescale():Void {
-		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
-		var scale = min / 300;
-		if (scale < 1) scale = 1;
-		size = Std.int(mainSize * scale);
 	}
 
 	inline function initImages():Void {
@@ -131,15 +125,15 @@ class Touch {
 		var sy = Screen.h - size * 3;
 		buttons = [
 			new Button({x: sx + size, y: sy, img: mainArrow, keys: [KeyCode.Up], clickMode: true}),
-			new Button({x: sx + size * 2, y: sy + size, img: mainArrow, ang: 90, keys: [KeyCode.Right]}),
-			new Button({x: sx + size, y: sy + size * 2, img: mainArrow, ang: 180, keys: [KeyCode.Down]}),
-			new Button({x: sx, y: sy + size, img: mainArrow, ang: 270, keys: [KeyCode.Left]}),
+			new Button({x: sx + size * 2, y: sy + size, img: mainArrow, angle: 90, keys: [KeyCode.Right]}),
+			new Button({x: sx + size, y: sy + size * 2, img: mainArrow, angle: 180, keys: [KeyCode.Down]}),
+			new Button({x: sx, y: sy + size, img: mainArrow, angle: 270, keys: [KeyCode.Left]}),
 			new Button({x: sx + size, y: sy + size, img: actionBtn, keys: [KeyCode.E], clickMode: true}),
 
 			new Button({x: sx, y: sy, img: subArrow, keys: [KeyCode.Left, KeyCode.Up]}),
-			new Button({x: sx + size * 2, y: sy, img: subArrow, ang: 90, keys: [KeyCode.Right, KeyCode.Up]}),
-			new Button({x: sx + size * 2, y: sy + size * 2, img: subArrow, ang: 180, keys: [KeyCode.R], clickMode: true}),
-			new Button({x: sx, y: sy + size * 2, img: subArrow, ang: 270, keys: [KeyCode.Q], clickMode: true}),
+			new Button({x: sx + size * 2, y: sy, img: subArrow, angle: 90, keys: [KeyCode.Right, KeyCode.Up]}),
+			new Button({x: sx + size * 2, y: sy + size * 2, img: subArrow, angle: 180, keys: [KeyCode.R], clickMode: true}),
+			new Button({x: sx, y: sy + size * 2, img: subArrow, angle: 270, keys: [KeyCode.Q], clickMode: true}),
 			new Button({x: Screen.w - size * 3, y: 0, img: minusBtn, keys: [KeyCode.HyphenMinus], clickMode: true}),
 			new Button({x: Screen.w - size * 2, y: 0, img: plusBtn, keys: [KeyCode.Equals], clickMode: true}),
 			new Button({x: Screen.w - size, y: 0, img: pauseBtn, keys: [KeyCode.Escape], clickMode: true}),

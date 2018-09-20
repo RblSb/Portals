@@ -2,11 +2,10 @@ package ui;
 
 import haxe.Constraints.Function;
 import kha.graphics2.Graphics;
-import kha.Image;
 import kha.math.FastMatrix3;
+import kha.FastFloat;
+import kha.Image;
 import kha.input.KeyCode;
-import kha.Color;
-import khm.Types.Point;
 import khm.Types.Rect;
 import khm.Screen;
 import khm.Screen.Pointer;
@@ -19,7 +18,7 @@ private typedef ButtonSets = {
 	?h:Float,
 	?clickMode:Bool,
 	?img:Image,
-	?ang:Float,
+	?angle:Float,
 	?keys:Array<KeyCode>,
 	?onDown:Function
 }
@@ -32,7 +31,7 @@ class Button {
 	var onDownFunc:Function;
 	var clickMode = false;
 	var img:Image;
-	var ang = 0.0;
+	var angle = 0.0;
 
 	public function new(sets:ButtonSets) {
 		rect = {x: sets.x, y: sets.y, w: 10, h: 10};
@@ -49,10 +48,12 @@ class Button {
 			}
 		}
 
-		if (sets.ang != null) ang = sets.ang;
+		if (sets.angle != null) angle = sets.angle;
 		if (sets.keys != null) keys = sets.keys;
 		onDownFunc = sets.onDown;
 	}
+
+	var transformation = FastMatrix3.identity();
 
 	public function draw(g:Graphics):Void {
 		if (isDown) {
@@ -60,26 +61,40 @@ class Button {
 			g.fillRect(rect.x, rect.y, rect.w, rect.h);
 		}
 		g.color = 0xFFFFFFFF;
-		g.rotate(ang * Math.PI/180, rect.x + rect.w/2, rect.y + rect.h/2);
+		if (angle != 0) {
+			transformation.setFrom(g.transformation);
+			g.transformation = g.transformation.multmat(
+				rotation(angle * Math.PI / 180, rect.x + rect.w / 2, rect.y + rect.h / 2)
+			);
+		}
 		if (img != null) g.drawScaledImage(img, rect.x, rect.y, rect.w, rect.h);
-		g.transformation = Utils.matrix();
+		if (angle != 0) {
+			g.transformation = transformation;
+		}
+	}
+
+	inline function rotation(angle:FastFloat, centerX:FastFloat, centerY:FastFloat): FastMatrix3 {
+	return FastMatrix3.translation(centerX, centerY)
+		.multmat(FastMatrix3.rotation(angle))
+		.multmat(FastMatrix3.translation(-centerX, -centerY));
 	}
 
 	public static function onDown(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
 		var result = false;
-		//down pressed button
-		for (b in buttons) if (b.check(p.x, p.y)) {
-			for (i in b.keys) {
-				screen.onKeyDown(i);
-				screen.keys[i] = true;
+		// down pressed button
+		for (b in buttons)
+			if (b.check(p.x, p.y)) {
+				for (i in b.keys) {
+					screen.onKeyDown(i);
+					screen.keys[i] = true;
+				}
+				if (b.onDownFunc != null) b.onDownFunc(p);
+				b.isDown = true;
+				result = true;
+				/*if (b.clickMode) {
+					onUp(screen, buttons, p);
+				}*/
 			}
-			if (b.onDownFunc != null) b.onDownFunc(p);
-			b.isDown = true;
-			result = true;
-			/*if (b.clickMode) {
-				onUp(screen, buttons, p);
-			}*/
-		}
 
 		return result;
 	}
@@ -87,7 +102,7 @@ class Button {
 	public static function onMove(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
 		if (!p.isDown) return false;
 		if (!isActive(buttons, p)) return false;
-		//down current button and up all others
+		// down current button and up all others
 		for (b in buttons)
 			if (b.isDown && !b.check(p.x, p.y)) {
 				for (i in b.keys) screen.keys[i] = false;
@@ -96,7 +111,7 @@ class Button {
 
 		for (b in buttons)
 			if (b.check(p.x, p.y)) {
-				if (!b.isDown) { //!b.clickMode ||
+				if (!b.isDown) { // !b.clickMode ||
 					for (i in b.keys) screen.keys[i] = true;
 					b.isDown = true;
 				}
@@ -107,14 +122,15 @@ class Button {
 
 	public static function onUp(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
 		if (!isActive(buttons, p)) return false;
-		//up latest pressed button
-		for (b in buttons) if (b.check(p.x, p.y)) {
-			for (i in b.keys) {
-				screen.onKeyUp(i);
-				screen.keys[i] = false;
+		// up latest pressed button
+		for (b in buttons)
+			if (b.check(p.x, p.y)) {
+				for (i in b.keys) {
+					screen.onKeyUp(i);
+					screen.keys[i] = false;
+				}
+				b.isDown = false;
 			}
-			b.isDown = false;
-		}
 
 		return true;
 	}
@@ -125,39 +141,13 @@ class Button {
 	}
 
 	static inline function isActive(buttons:Array<Button>, p:Pointer):Bool {
-		var active = false; //if you pressed buttons
-		for (b in buttons) if (b.check(p.startX, p.startY)) {
-			active = true;
-			break;
-		}
+		var active = false; // if you pressed buttons
+		for (b in buttons)
+			if (b.check(p.startX, p.startY)) {
+				active = true;
+				break;
+			}
 		return active;
 	}
-
-	/*static inline function sendCommand(screen:Screen, keys:Array<KeyCode>):Void {
-		if (keys.length < 1) return;
-		for (i in keys) screen.keys[i] = true;
-		var id = keys.length - 1;
-		screen.onKeyDown(keys[id]);
-		for (i in keys) screen.keys[i] = false;
-	}*/
-
-	/*public static function onMove(screen:Screen, buttons:Array<Button>, p:Pointer):Bool {
-		if (!p.isDown) return false;
-		if (!isActive(buttons, p)) return false;
-		//down current button and up all others
-		for (b in buttons) {
-			if (b.check(p.x, p.y)) {
-				if (!b.isDown) { //!b.clickMode ||
-					for (i in b.keys) screen.keys[i] = true;
-					b.isDown = true;
-				}
-			} else if (b.isDown) {
-				for (i in b.keys) screen.keys[i] = false;
-				b.isDown = false;
-			}
-		}
-
-		return true;
-	}*/
 
 }

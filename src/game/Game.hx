@@ -25,7 +25,6 @@ typedef AutoSave = {
 
 class Game extends Screen {
 
-	//var backbuffer = Image.create(1, 1);
 	var player:Player;
 	var touch:Touch;
 	var tilemap:Tilemap;
@@ -213,6 +212,7 @@ class Game extends Screen {
 			var menu = new PauseMenu(this, editor, bg);
 			menu.show();
 			menu.init();
+			menu.setScale(scale);
 		}
 	}
 
@@ -233,17 +233,17 @@ class Game extends Screen {
 	override function onResize():Void {
 		tilemap.camera.w = Screen.w;
 		tilemap.camera.h = Screen.h;
+		if (Screen.isTouch) touch.resize();
 		if (true) return;
-		var min = Screen.w < Screen.h ? Screen.w : Screen.h;
+		var min = Math.min(Screen.w, Screen.h);
 		var newScale = Std.int(min / 500 * 2) / 2;
 		if (newScale < 1) newScale = 1;
 		if (newScale != scale) setScale(newScale);
-		if (Screen.isTouch) touch.resize();
 	}
 
 	override function onRescale(scale:Float):Void {
 		tilemap.scale = scale;
-		// textField.rescale(scale);
+		if (Screen.isTouch) touch.resize();
 	}
 
 	override function onUpdate():Void {

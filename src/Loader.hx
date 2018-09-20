@@ -43,10 +43,16 @@ class Loader {
 			menu.init();
 		};
 
+		#if debug
 		var game = new Game();
 		game.show();
 		game.init();
 		game.playLevel(0);
+		#else
+		var menu = new Menu();
+		menu.show();
+		menu.init();
+		#end
 
 		/*var editor = new editor.Editor();
 		editor.show();
