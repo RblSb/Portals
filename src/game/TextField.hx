@@ -34,7 +34,7 @@ class TextField {
 
 	public function show(text:SuperString, author:SuperString):Void {
 		if (text == "" && author == "") return;
-		//trace(text+"| "+author);
+		// trace(text+"| "+author);
 		this.text = text;
 		this.author = author;
 		parseTextField(text, author);
@@ -55,8 +55,11 @@ class TextField {
 		state = 3;
 	}
 
-	public function close(force=false):Void {
-		if (force) {state = 0; return;}
+	public function close(force = false):Void {
+		if (force) {
+			state = 0;
+			return;
+		}
 		if (state == 3) {
 			if (offset + h / fontH < lines.length) {
 				offset += Std.int(h / fontH);
@@ -82,7 +85,7 @@ class TextField {
 			var line = text.substring(lastBreak, i + 1);
 			var fw = font.width(fontSize, line);
 
-			if (lines.length % (h / fontH) == h / fontH - 1) //last line offset
+			if (lines.length % (h / fontH) == h / fontH - 1) // last line offset
 				width = origWidth - font.width(fontSize, author);
 			else width = origWidth;
 
@@ -131,11 +134,11 @@ class TextField {
 	function animText(g:Graphics):Void {
 		drawBG(g);
 
-		for (i in 0...txy) g.drawString(lines[offset+i], 0, i * fontH);
-		var substr = lines[offset+txy].substring(0, txx);
+		for (i in 0...txy) g.drawString(lines[offset + i], 0, i * fontH);
+		var substr = lines[offset + txy].substring(0, txx);
 		g.drawString(substr, 0, txy * fontH);
 
-		if (txx < lines[offset+txy].length) txx++;
+		if (txx < lines[offset + txy].length) txx++;
 		else { //new line
 			if ((txy + 1 < h / fontH) && (offset + txy + 1 < lines.length)) {
 				txx = 0;
@@ -158,8 +161,8 @@ class TextField {
 		drawBG(g);
 		var len = Std.int(h / fontH);
 		for (i in 0...len) {
-			if (offset+i < lines.length)
-				g.drawString(lines[offset+i], 0, i * fontH);
+			if (offset + i < lines.length)
+				g.drawString(lines[offset + i], 0, i * fontH);
 		}
 		drawAuthor(g);
 	}
@@ -168,10 +171,13 @@ class TextField {
 		if (state == 0) return;
 		g.font = font;
 		g.fontSize = fontSize;
-		switch(state) {
-			case 1: animBG(g);
-			case 2: animText(g);
-			case 3: showing(g);
+		switch (state) {
+			case 1:
+				animBG(g);
+			case 2:
+				animText(g);
+			case 3:
+				showing(g);
 		}
 	}
 

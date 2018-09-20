@@ -51,7 +51,7 @@ class PauseMenu extends Screen {
 
 	override function onResize():Void {
 		var min = Math.min(Screen.w, Screen.h);
-		fontSize = Std.int(min/10/2)*2;
+		fontSize = Std.int(min / 10 / 2) * 2;
 		var maxW = 0.0;
 		for (item in items) {
 			var w = font.width(fontSize, item.text);
@@ -61,9 +61,9 @@ class PauseMenu extends Screen {
 		for (i in 0...items.length) {
 			var fh = font.height(fontSize);
 			var y = (Screen.h - items.length * fh) / 2 + i * fh;
-			//items[i].rect.x = fh * (items.length - i);
+			// items[i].rect.x = fh * (items.length - i);
 			items[i].rect.y = y;
-			//items[i].rect.w = maxW;
+			// items[i].rect.w = maxW;
 			items[i].rect.w = fh * (items.length - i) + maxW;
 			items[i].rect.h = fh;
 			items[i].fontSize = fontSize;
@@ -71,8 +71,9 @@ class PauseMenu extends Screen {
 	}
 
 	function choose(id:Int):Void {
-		switch(id) {
-			case 0: game.show();
+		switch (id) {
+			case 0:
+				game.show();
 			case 1:
 				game.show();
 				game.restart();
@@ -139,19 +140,19 @@ class PauseMenu extends Screen {
 		var last = items.length - 1;
 		g.color = 0x40000000;
 		g.fillRect(
-			0, items[0].rect.y - fh/8,
-			items[last].rect.x + items[last].rect.w + fh/16,
-			items[last].rect.y + items[last].rect.h - items[0].rect.y + fh/4
+			0, items[0].rect.y - fh / 8,
+			items[last].rect.x + items[last].rect.w + fh / 16,
+			items[last].rect.y + items[last].rect.h - items[0].rect.y + fh / 4
 		);
 		g.fillTriangle(
-			items[last].rect.x + items[last].rect.w + fh/16,
-			items[0].rect.y - fh/8,
+			items[last].rect.x + items[last].rect.w + fh / 16,
+			items[0].rect.y - fh / 8,
 
-			items[0].rect.x + items[0].rect.w + fh + fh/4 + fh/16,
-			items[0].rect.y - fh/8,
+			items[0].rect.x + items[0].rect.w + fh + fh / 4 + fh / 16,
+			items[0].rect.y - fh / 8,
 
-			items[last].rect.x + items[last].rect.w + fh/16,
-			items[last].rect.y + items[last].rect.h + fh/8
+			items[last].rect.x + items[last].rect.w + fh / 16,
+			items[last].rect.y + items[last].rect.h + fh / 8
 		);
 		g.color = 0xFFFFFFFF;
 
@@ -165,7 +166,6 @@ class PauseMenu extends Screen {
 				rect.x + rect.w + rect.h, rect.y
 			);
 		}
-
 
 		for (i in items) i.draw(g);
 

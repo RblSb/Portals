@@ -54,7 +54,10 @@ class Sprite {
 	}
 
 	function update():Void {
-		if (delay > 0) {delay--; return;}
+		if (delay > 0) {
+			delay--;
+			return;
+		}
 		delay = delayMax;
 
 		if (current != end) {
@@ -63,7 +66,7 @@ class Sprite {
 			if (reset && current == end) current = end = 0;
 			var tile = lvl.getTile(layer, tile.x, tile.y);
 			tile.setFrame(current);
-			//lvl.setTileAnim(layer, tile.x, tile.y, type, current);
+			// lvl.setTileAnim(layer, tile.x, tile.y, type, current);
 		} else remove();
 	}
 

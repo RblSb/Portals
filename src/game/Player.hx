@@ -64,14 +64,14 @@ class Player implements Body {
 	var frameTypeId:Int;
 
 	static inline var airHack = false;
-	public var dir = 1; //frame direction
+	public var dir = 1; // frame direction
 	public var rotate = 0.0;
 	public var rect:Rect;
 	public var speed = new Vector2();
 	public var onLand = false;
 	var aimMode:AimMode;
 	var aimType = 0;
-	var aRotate = 0.0; //easing
+	var aRotate = 0.0; // easing
 
 	public function new() {}
 
@@ -95,7 +95,7 @@ class Player implements Body {
 		var json:Player_json = haxe.Json.parse(text);
 		var w = 0, h = 0;
 		for (i in 0...json.frames.length) {
-			var img:Image = Assets.images.get("player_"+i);
+			var img:Image = Assets.images.get("player_" + i);
 			if (h < img.height) h = img.height;
 			w += img.width;
 		}
@@ -107,10 +107,10 @@ class Player implements Body {
 		var curSet = "none";
 		frameW = [0];
 		for (i in 0...json.frames.length) {
-			var img = Assets.images.get("player_"+i);
+			var img = Assets.images.get("player_" + i);
 			g.transformation = Utils.matrix();
 			g.drawImage(img, offset, 0);
-			g.transformation = Utils.matrix(-1, 0, offset+img.width);
+			g.transformation = Utils.matrix(-1, 0, offset + img.width);
 			g.drawImage(img, 0, h);
 
 			var frame = json.frames[i];
@@ -126,7 +126,7 @@ class Player implements Body {
 		g.end();
 
 		var len = frameW.length;
-		frameW[len] = sprite.width - frameW[len-1];
+		frameW[len] = sprite.width - frameW[len - 1];
 		clone = Image.createRenderTarget(tileSize, tileSize);
 
 		return {x: 0, y: 0, w: w, h: h};
@@ -137,11 +137,11 @@ class Player implements Body {
 
 		var sx = Math.abs(speed.x);
 		var sy = Math.abs(speed.y);
-		var vx = sx / speed.x; //direction
+		var vx = sx / speed.x; // direction
 		var vy = sy / speed.y;
-		var min = tileSize/4;
+		var min = tileSize / 4;
 
-		while(sx > min || sy > min) { //speed > min dist
+		while (sx > min || sy > min) { // speed > min dist
 			if (sx > min) {
 				rect.x += min * vx;
 				sx -= min;
@@ -164,11 +164,10 @@ class Player implements Body {
 		}
 		collision(this, 1);
 
-		//x-deceleration
+		// x-deceleration
 		if (onLand) {
 			if (speed.x >= consts.friction) speed.x -= consts.friction;
-			//fix 0.0 hack to hxjava bug (float is int)
-			if (speed.x <= 0.0-consts.friction) speed.x += consts.friction;
+			if (speed.x <= -consts.friction) speed.x += consts.friction;
 			if (Math.abs(speed.x) < consts.friction) speed.x = 0;
 		}
 
@@ -204,24 +203,24 @@ class Player implements Body {
 		var maxY = Math.ceil((rect.y + rect.h) / tileSize);
 
 		for (iy in y...maxY)
-		for (ix in x...maxX) {
-			if (lvl.getTile(1, ix, iy).props.collide) {
-				block(ix, iy, body, dir);
-				collide = true;
+			for (ix in x...maxX) {
+				if (lvl.getTile(1, ix, iy).props.collide) {
+					block(ix, iy, body, dir);
+					collide = true;
+				}
 			}
-		}
 
 		for (iy in y...maxY)
-		for (ix in x...maxX) {
-			if (!lvl.getTile(1, ix, iy).props.collide) {
-				if (object(ix, iy, body, dir)) collide = true;
+			for (ix in x...maxX) {
+				if (!lvl.getTile(1, ix, iy).props.collide) {
+					if (object(ix, iy, body, dir)) collide = true;
+				}
 			}
-		}
 
 		for (iy in y...maxY)
-		for (ix in x...maxX) {
-			if (trigger(ix, iy, body, dir)) return collide;
-		}
+			for (ix in x...maxX) {
+				if (trigger(ix, iy, body, dir)) return collide;
+			}
 
 		return collide;
 	}
@@ -230,20 +229,20 @@ class Player implements Body {
 		var rect = body.rect;
 		var speed = body.speed;
 
-		if (dir == 0) { //x-motion
-			if (speed.x > 0) { //right
+		if (dir == 0) { // x-motion
+			if (speed.x > 0) { // right
 				rect.x = ix * tileSize - rect.w;
 				speed.x = 0;
-			} else if (speed.x < 0) { //left
+			} else if (speed.x < 0) { // left
 				rect.x = ix * tileSize + tileSize;
 				speed.x = 0;
 			}
-		} else if (dir == 1) { //y-motion
-			if (speed.y > 0) { //down
+		} else if (dir == 1) { // y-motion
+			if (speed.y > 0) { // down
 				body.onLand = true;
 				rect.y = iy * tileSize - rect.h;
 				speed.y = 0;
-			} else if (speed.y < 0) { //up
+			} else if (speed.y < 0) { // up
 				rect.y = iy * tileSize + tileSize;
 				speed.y = 0;
 			}
@@ -257,72 +256,81 @@ class Player implements Body {
 		var speed = body.speed;
 		var collide = false;
 
-		switch(id) {
-		case 3: game.restart();
-		case 5: //door
-			if (tile.frame == 0 && dir == 0) { //x-motion
-				if (speed.x > 0) { //right
-					if (rect.x + rect.w - speed.x < ix * tileSize + tileSize/2)
-					if (rect.x + rect.w + speed.x > ix * tileSize + tileSize/2) {
-						rect.x = ix * tileSize + tileSize/2 - rect.w - 1;
-						speed.x = 0;
+		switch (id) {
+			case 3:
+				game.restart();
+			case 5: // door
+				if (tile.frame == 0 && dir == 0) { // x-motion
+					if (speed.x > 0) { // right
+						if (rect.x + rect.w - speed.x < ix * tileSize + tileSize / 2)
+							if (rect.x + rect.w + speed.x > ix * tileSize + tileSize / 2) {
+								rect.x = ix * tileSize + tileSize / 2 - rect.w - 1;
+								speed.x = 0;
+								collide = true;
+							}
+					} else if (speed.x < 0) { // left
+						if (rect.x - speed.x > ix * tileSize + tileSize / 2)
+							if (rect.x + speed.x < ix * tileSize + tileSize / 2) {
+								rect.x = ix * tileSize + tileSize / 2 + 1;
+								speed.x = 0;
+								collide = true;
+							}
+					}
+				}
+			case 7: // grill
+				if (dir == 0) { // x-motion
+					if (speed.x > 0) { // right
+						if (rect.x + rect.w - speed.x < ix * tileSize + tileSize / 2)
+							if (rect.x + rect.w + speed.x > ix * tileSize + tileSize / 2)
+								Portal.removeAll();
+					} else if (speed.x < 0) { // left
+						if (rect.x - speed.x > ix * tileSize + tileSize / 2)
+							if (rect.x + speed.x < ix * tileSize + tileSize / 2)
+								Portal.removeAll();
+					}
+				}
+			case 8, 9, 10, 11: // panels
+				if (dir == 1 && ((id == 8 && rect.y + rect.h > (iy + 1) * tileSize - tileSize / 4) || (id == 9 && rect.x < ix * tileSize +
+					tileSize / 4) || (id == 10 && rect.y < iy * tileSize + tileSize / 4) || (id == 11 && rect.x + rect.w > (ix + 1) * tileSize - tileSize / 4))) {
+					var obj = lvl.getObjects(1, ix, iy)[0]; // TODO
+					if (obj != null && obj.data.speed != null) {
 						collide = true;
-					}
-				} else if (speed.x < 0) { //left
-					if (rect.x - speed.x > ix * tileSize + tileSize/2)
-					if (rect.x + speed.x < ix * tileSize + tileSize/2) {
-						rect.x = ix * tileSize + tileSize/2 + 1;
-						speed.x = 0;
-						collide = true;
-					}
-				}
-			}
-		case 7: //grill
-			if (dir == 0) { //x-motion
-				if (speed.x > 0) { //right
-					if (rect.x + rect.w - speed.x < ix * tileSize + tileSize/2)
-					if (rect.x + rect.w + speed.x > ix * tileSize + tileSize/2) Portal.removeAll();
-				} else if (speed.x < 0) { //left
-					if (rect.x - speed.x > ix * tileSize + tileSize/2)
-					if (rect.x + speed.x < ix * tileSize + tileSize/2) Portal.removeAll();
-				}
-			}
-		case 8, 9, 10, 11: //panels
-			if (dir == 1 &&
-				((id == 8 && rect.y + rect.h > (iy+1) * tileSize - tileSize/4) ||
-				(id == 9 && rect.x < ix * tileSize + tileSize/4) ||
-				(id == 10 && rect.y < iy * tileSize + tileSize/4) ||
-				(id == 11 && rect.x + rect.w > (ix+1) * tileSize - tileSize/4)
-			)) {
-				var obj = lvl.getObjects(1, ix, iy)[0]; //TODO
-				if (obj != null && obj.data.speed != null) {
-					collide = true;
-					var start = 0;
-					var end = Std.int(tile.frameCount / 3);
-					switch(id) {
-					case 8, 10:
-						if (obj.data.speed.x != 0) speed.x = obj.data.speed.x;
-						if (id == 8 && speed.y > obj.data.speed.y ||
-							id == 10 && speed.y < obj.data.speed.y) speed.y = obj.data.speed.y;
-					case 9, 11:
-						if (id == 9 && speed.x < obj.data.speed.x ||
-							id == 11 && speed.x > obj.data.speed.x) speed.x = obj.data.speed.x;
-						if (obj.data.speed.y != 0) speed.y = obj.data.speed.y;
-					}
-					var s = (id == 8 || id == 10) ? obj.data.speed.x : obj.data.speed.y;
-					if (id == 8 || id == 9) {
-						if (s < 0) {start += end; end *= 2;}
-						else if (s > 0) {start += end * 2; end *= 3;}
+						var start = 0;
+						var end = Std.int(tile.frameCount / 3);
+						switch (id) {
+							case 8, 10:
+								if (obj.data.speed.x != 0) speed.x = obj.data.speed.x;
+								if (id == 8 && speed.y > obj.data.speed.y || id == 10 && speed.y < obj.data.speed.y) speed.y = obj.data.speed.y;
+							case 9, 11:
+								if (id == 9 && speed.x < obj.data.speed.x || id == 11 && speed.x > obj.data.speed.x) speed.x = obj.data.speed.x;
+								if (obj.data.speed.y != 0) speed.y = obj.data.speed.y;
+						}
+						var s = (id == 8 || id == 10) ? obj.data.speed.x : obj.data.speed.y;
+						if (id == 8 || id == 9) {
+							if (s < 0) {
+								start += end;
+								end *= 2;
+							}
+							else if (s > 0) {
+								start += end * 2;
+								end *= 3;
+							}
 
-					} else if (id == 10 || id == 11) {
-						if (s > 0) {start += end; end *= 2;}
-						else if (s < 0) {start += end * 2; end *= 3;}
-					}
-					if (Math.abs(s) < 5) end--;
+						} else if (id == 10 || id == 11) {
+							if (s > 0) {
+								start += end;
+								end *= 2;
+							}
+							else if (s < 0) {
+								start += end * 2;
+								end *= 3;
+							}
+						}
+						if (Math.abs(s) < 5) end--;
 
-					Sprite.add(new Sprite(lvl, 1, {x: ix, y: iy}, id, start, end, true));
+						Sprite.add(new Sprite(lvl, 1, {x: ix, y: iy}, id, start, end, true));
+					}
 				}
-			}
 		}
 		return collide;
 	}
@@ -334,15 +342,17 @@ class Player implements Body {
 		var collide = false;
 		var stop = false;
 
-		switch(id) {
+		switch (id) {
 			case 2:
 				game.levelComplete();
 				stop = true;
 			case 3:
 				game.restart();
 				stop = true;
-			case 4: game.checkpoint(ix, iy);
-			case 5: game.showText(ix, iy);
+			case 4:
+				game.checkpoint(ix, iy);
+			case 5:
+				game.showText(ix, iy);
 		}
 		return stop;
 	}
@@ -359,7 +369,7 @@ class Player implements Body {
 		if (keys[KeyCode.Down] || keys[KeyCode.S]) {
 			keys[KeyCode.Down] = false;
 			keys[KeyCode.S] = false;
-			//speed.y += tileSize;
+			// speed.y += tileSize;
 			game.closeText();
 		}
 
@@ -367,7 +377,7 @@ class Player implements Body {
 			keys[KeyCode.E] = false;
 			action();
 			/*speed.x = tileSize * 3;
-			speed.y = -tileSize * 3;*/
+				speed.y = -tileSize * 3; */
 
 		} else if (keys[KeyCode.R]) {
 			keys[KeyCode.R] = false;
@@ -376,8 +386,8 @@ class Player implements Body {
 	}
 
 	inline function action():Void {
-		var x = Std.int((rect.x + rect.w/2) / tileSize);
-		var y = Std.int((rect.y + rect.h/2) / tileSize);
+		var x = Std.int((rect.x + rect.w / 2) / tileSize);
+		var y = Std.int((rect.y + rect.h / 2) / tileSize);
 		var tile = lvl.getTile(1, x, y);
 		var id = lvl.getTile(1, x, y).id;
 		if (id == 6) button(x, y, tile);
@@ -429,21 +439,21 @@ class Player implements Body {
 		var w = Screen.w;
 		var h = Screen.h;
 		var p:Point = {
-			x: rect.x + rect.w/2,
-			y: rect.y + rect.h/3
+			x: rect.x + rect.w / 2,
+			y: rect.y + rect.h / 3
 		};
 		var ang = Math.atan2(
 			game.pointers[0].y - p.y - lvl.camera.y,
 			game.pointers[0].x - p.x - lvl.camera.x
 		);
-		if (ang < -Math.PI/2 || ang > Math.PI/2) dir = 0;
+		if (ang < -Math.PI / 2 || ang > Math.PI / 2) dir = 0;
 		else dir = 1;
 
 		var wh:Float = w > h ? w : h;
-		var max = 0.0; //max line distance
-		if (ang < -Math.PI/2) max = Utils.dist(p, {x: 0, y: 0});
-		else if (ang < 0) max = Utils.dist(p, {x: lvl.w * tileSize, y:0});
-		else if (ang > Math.PI/2) max = Utils.dist(p, {x: 0, y: lvl.h * tileSize});
+		var max = 0.0; // max line distance
+		if (ang < -Math.PI / 2) max = Utils.dist(p, {x: 0, y: 0});
+		else if (ang < 0) max = Utils.dist(p, {x: lvl.w * tileSize, y: 0});
+		else if (ang > Math.PI / 2) max = Utils.dist(p, {x: 0, y: lvl.h * tileSize});
 		else max = Utils.dist(p, {x: lvl.w * tileSize, y: lvl.h * tileSize});
 		if (wh < max) wh = max;
 
@@ -465,8 +475,8 @@ class Player implements Body {
 	var tempMatrix = FastMatrix3.identity();
 
 	public function draw(g:Graphics):Void {
-		//g.drawImage(sprite, 0, 0);
-		//g.drawRect(rect.x + lvl.camera.x, rect.y + lvl.camera.y, rect.w, rect.h);
+		// g.drawImage(sprite, 0, 0);
+		// g.drawRect(rect.x + lvl.camera.x, rect.y + lvl.camera.y, rect.w, rect.h);
 		aimMode.draw(g, aimType);
 
 		var sy = dir == 1 ? 0 : spriteH;
@@ -477,24 +487,18 @@ class Player implements Body {
 		g.color = 0xFFFFFFFF;
 		tempMatrix.setFrom(g.transformation);
 		g.transformation = g.transformation.multmat(
-			FastMatrix3.identity()
-			//FastMatrix3.translation(lvl.camera.x, lvl.camera.y)
+			FastMatrix3.identity() // FastMatrix3.translation(lvl.camera.x, lvl.camera.y)
 		).multmat(
 			rotation(aRotate * Math.PI / 180, x + rect.w / 2, y + rect.h / 2)
 		);
-		g.drawSubImage(
-			sprite,
-			x, y,
-			frameW[frame], sy,
-			frameW[frame+1] - frameW[frame], spriteH
-		);
+		g.drawSubImage(sprite, x, y, frameW[frame], sy, frameW[frame + 1] - frameW[frame], spriteH);
 		g.transformation = tempMatrix;
 	}
 
-	inline function rotation(angle: FastFloat, centerx: FastFloat, centery: FastFloat): FastMatrix3 {
-	return FastMatrix3.translation(centerx, centery)
-		.multmat(FastMatrix3.rotation(angle))
-		.multmat(FastMatrix3.translation(-centerx, -centery));
+	inline function rotation(angle:FastFloat, centerX:FastFloat, centerY:FastFloat):FastMatrix3 {
+		return FastMatrix3.translation(centerX, centerY)
+			.multmat(FastMatrix3.rotation(angle))
+			.multmat(FastMatrix3.translation(-centerX, -centerY));
 	}
 
 	public function setClone(px:Float, py:Float, ang:Float, dir:Int, tile:IPoint):Void {
@@ -503,30 +507,26 @@ class Player implements Body {
 		var x = Math.round(px + offx);
 		var y = Math.round(py - (spriteH - rect.h));
 		var sx = frameW[frame];
-		var dr = dir == -1 ? this.dir : (this.dir+1)%2;
+		var dr = dir == -1 ? this.dir : (this.dir + 1) % 2;
 		var sy = dr == 1 ? 0 : spriteH;
-		var ex = frameW[frame+1] - frameW[frame];
+		var ex = frameW[frame + 1] - frameW[frame];
 		var ey = spriteH;
 
 		var g = clone.g2;
 		g.begin(true, 0x0);
-		//fix scissor
+		// fix scissor
 		g.scissor(tile.x * tileSize - x, tile.y * tileSize - y, tileSize, tileSize);
-		g.rotate((rotate + ang) * Math.PI/180, tileSize/2, tileSize/2);
-		g.drawSubImage(
-			sprite,
-			0, 0, //fix del int cords
-			sx, sy,
-			ex, ey
-		);
+		g.rotate((rotate + ang) * Math.PI / 180, tileSize / 2, tileSize / 2);
+		g.drawSubImage(sprite, 0, 0, // fix del int cords
+			sx, sy, ex, ey);
 		g.transformation = Utils.matrix();
 		g.disableScissor();
 		g.end();
 	}
 
 	public function drawClone(g:Graphics, px:Float, py:Float, ang:Float):Void {
-		var w = frameW[frame+1] - frameW[frame];
-		var offx = rect.w/2 - w/2;
+		var w = frameW[frame + 1] - frameW[frame];
+		var offx = rect.w / 2 - w / 2;
 		var x = Math.round(px + lvl.camera.x + offx);
 		var y = Math.round(py + lvl.camera.y - (spriteH - rect.h));
 
@@ -553,8 +553,8 @@ class Player implements Body {
 			if (left == right) {
 				if (speed.x != 0) {
 					setAnimType("brake");
-					if (speed.x < -consts.maxRunSX/2) dir = 0;
-					else if (speed.x > consts.maxRunSX/2) dir = 1;
+					if (speed.x < -consts.maxRunSX / 2) dir = 0;
+					else if (speed.x > consts.maxRunSX / 2) dir = 1;
 				} else setAnimType("stand");
 			} else {
 				if (Math.abs(speed.x) > consts.landSX) setAnimType("run");

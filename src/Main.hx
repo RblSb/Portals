@@ -25,7 +25,7 @@ class Main {
 
 	static function setFullWindowCanvas():Void {
 		#if kha_html5
-		//make html5 canvas resizable
+		// make html5 canvas resizable
 		document.documentElement.style.padding = "0";
 		document.documentElement.style.margin = "0";
 		document.body.style.padding = "0";

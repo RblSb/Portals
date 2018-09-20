@@ -28,7 +28,7 @@ class Menu extends Screen {
 	var fontSize:Int;
 	var particler:Particler;
 	var current:Int;
-	//var checker:Timer;
+	// var checker:Timer;
 	var confirm:{yes:Function, no:Function};
 	var githubLink = "https://github.com/RblSb/Portals";
 
@@ -36,9 +36,9 @@ class Menu extends Screen {
 		super();
 	}
 
-	public function init(id=0):Void {
-		var x = (- Assets.images.menubg.width + 47);
-		var y = (- Assets.images.menubg.height + 28);
+	public function init(id = 0):Void {
+		var x = (-Assets.images.menubg.width + 47);
+		var y = (-Assets.images.menubg.height + 28);
 		particler = new Particler({
 			x: x, y: y, w: 31,
 			speed: new Vector2(0, -0.5),
@@ -53,80 +53,80 @@ class Menu extends Screen {
 
 	function createMenu(id:Int):Array<String> {
 		var menu:Array<String> = [];
-		switch(id) {
-		case -1:
-			menu = [
-				"/"+Lang.get("are_you_sure"),
-				"yes",
-				"no"
-			];
-		case 0:
-			menu = [
-				"game",
-				"level_editor",
-				"settings",
-				"info",
-				#if sys "exit" #end
-			];
-		case 1:
-			var isNew = Settings.read().levelProgress < 2;
-			menu = [
-				isNew ? "/"+Lang.get("continue") : "continue",
-				"new_game",
-				"level_select",
-				"/"+Lang.get("levels_online"),
-				"back"
-			];
-		case 12:
-			menu = [
-				"/"+Lang.get("play_traning"),
-				"yes",
-				"no"
-			];
-		case 13:
-			menu = ["training"];
-			var i = 1;
-			var end = Settings.read().levelProgress;
-			while(i <= end) { //Lvl.exists(i)
-				menu.push(Lang.get("level")+" "+i);
-				i++;
-			}
-			menu.push("back");
-		case 2:
-			menu = [
-				"path",
-				"width",
-				"height",
-				"create",
-				"continue",
-				"back"
-			];
-		case 3:
-			var sets = Settings.read();
-			var ch = ": ";
-			menu = [
-				"/"+Lang.get("music") + ch + 0, //sets.musicVolume,
-				"/"+Lang.get("control_type") + ch + sets.controlType,
-				Lang.get("language") + ch + Lang.iso.toUpperCase(),
-				"/"+Lang.get("touch") + ch + state(Screen.isTouch),
-				Lang.get("other"),
-				Lang.get("back")
-			];
-		case 35:
-			menu = [
-				"reset_data",
-				"back"
-			];
-		case 4:
-			menu = [
-				"about_game",
-				"about_editor",
-				"about_authors",
-				"github",
-				"back"
-			];
-		default:
-			menu = ["back"];
+		switch (id) {
+			case -1:
+				menu = [
+					"/" + Lang.get("are_you_sure"),
+					"yes",
+					"no"
+				];
+			case 0:
+				menu = [
+					"game",
+					"level_editor",
+					"settings",
+					"info",
+					#if sys "exit" #end
+				];
+			case 1:
+				var isNew = Settings.read().levelProgress < 2;
+				menu = [
+					isNew ? "/" + Lang.get("continue") : "continue",
+					"new_game",
+					"level_select",
+					"/" + Lang.get("levels_online"),
+					"back"
+				];
+			case 12:
+				menu = [
+					"/" + Lang.get("play_traning"),
+					"yes",
+					"no"
+				];
+			case 13:
+				menu = ["training"];
+				var i = 1;
+				var end = Settings.read().levelProgress;
+				while (i <= end) { // Lvl.exists(i)
+					menu.push(Lang.get("level") + " " + i);
+					i++;
+				}
+				menu.push("back");
+			case 2:
+				menu = [
+					"path",
+					"width",
+					"height",
+					"create",
+					"continue",
+					"back"
+				];
+			case 3:
+				var sets = Settings.read();
+				var ch = ": ";
+				menu = [
+					"/" + Lang.get("music") + ch + 0, // sets.musicVolume,
+					"/" + Lang.get("control_type") + ch + sets.controlType,
+					Lang.get("language") + ch + Lang.iso.toUpperCase(),
+					"/" + Lang.get("touch") + ch + state(Screen.isTouch),
+					Lang.get("other"),
+					Lang.get("back")
+				];
+			case 35:
+				menu = [
+					"reset_data",
+					"back"
+				];
+			case 4:
+				menu = [
+					"about_game",
+					"about_editor",
+					"about_authors",
+					"github",
+					"back"
+				];
+			default:
+				menu = ["back"];
 		}
 		return menu;
 	}
@@ -137,110 +137,110 @@ class Menu extends Screen {
 	}
 
 	function choose(id:Int):Void {
-		switch(current) {
-		case -1: //areYouSure
-			switch(id) {
-			case 1:
-				confirm.yes();
-				confirm = null;
-			case 2:
-				confirm.no();
-				confirm = null;
-			}
-		case 0: //Main Menu
-			switch(id) {
-			case 0: setMenu(1);
-			case 1:
-				var editor = new Editor();
-				editor.show();
-				editor.init();
-				//setMenu(2);
-			case 2: setMenu(3);
-			case 3: setMenu(4);
-			case 4: System.stop();
-			}
-		case 1: //Game Menu
-			switch(id) {
-			case 0:
-				var isNew = Settings.read().levelProgress < 2;
-				if (isNew) return;
+		switch (current) {
+			case -1: // areYouSure
+				switch (id) {
+					case 1:
+						confirm.yes();
+						confirm = null;
+					case 2:
+						confirm.no();
+						confirm = null;
+				}
+			case 0: // Main Menu
+				switch (id) {
+					case 0: setMenu(1);
+					case 1:
+						var editor = new Editor();
+						editor.show();
+						editor.init();
+					// setMenu(2);
+					case 2: setMenu(3);
+					case 3: setMenu(4);
+					case 4: System.stop();
+				}
+			case 1: // Game Menu
+				switch (id) {
+					case 0:
+						var isNew = Settings.read().levelProgress < 2;
+						if (isNew) return;
+						var game = new Game();
+						game.show();
+						game.init();
+						game.playCompany();
+					case 1:
+						var newGame = function() setMenu(12);
+						var cancel = function() setMenu(1);
+						if (Settings.read().levelProgress > 1) areYouSure(newGame, cancel); else newGame();
+					case 2: setMenu(13);
+					case 4: setMenu(0);
+				}
+			case 12: // Play Training?
+				if (id == 0) return;
+				if (id == 1) Settings.set({levelProgress: 0});
+				else Settings.set({levelProgress: 1});
 				var game = new Game();
 				game.show();
 				game.init();
 				game.playCompany();
-			case 1:
-				var newGame = function() setMenu(12);
-				var cancel = function() setMenu(1);
-				if (Settings.read().levelProgress > 1) areYouSure(newGame, cancel);
-				else newGame();
-			case 2: setMenu(13);
-			case 4: setMenu(0);
-			}
-		case 12: //Play Training?
-			if (id == 0) return;
-			if (id == 1) Settings.set({levelProgress: 0});
-			else Settings.set({levelProgress: 1});
-			var game = new Game();
-			game.show();
-			game.init();
-			game.playCompany();
-		case 13: //Level Select
-			if (id == items.length-1) setMenu(1);
-			else {
-				var game = new Game();
-				game.show();
-				game.init();
-				game.playLevel(id);
-				//if (id == items.length-2) game.playCompany();
-			}
-
-		case 2: //Editor
-			switch(id) {
-			case 0:
-				var editor = new Editor();
-				editor.show();
-				editor.init();
-			case 5: setMenu(0);
-			}
-		case 3: //Settings
-			switch(id) {
-			case 2:
-				for (i in 0...Lang.ids.length) {
-					var lang = Lang.ids[i];
-					if (lang == Lang.iso) {
-						var next = i + 1 < Lang.ids.length ? Lang.ids[i + 1] : Lang.ids[0];
-						Lang.set(next);
-						break;
-					}
+			case 13: // Level Select
+				if (id == items.length - 1) setMenu(1);
+				else {
+					var game = new Game();
+					game.show();
+					game.init();
+					game.playLevel(id);
+					// if (id == items.length-2) game.playCompany();
 				}
-				Settings.set({lang: Lang.iso});
-				Graphics.fontGlyphs = Lang.fontGlyphs;
-				setMenu(3);
-			case 3:
-				/*if (checker == null) checker = Timer.delay(function() {
-					Screen.isTouch = !Screen.isTouch;
-					Settings.set({touchMode: Screen.isTouch});
-					setMenu(3);
-					checker = null;
-				}, 100);*/
-			case 4: setMenu(35);
-			case 5: setMenu(0);
-			}
-		case 35: //Other Settings
-			switch(id) {
-			case 0: Settings.reset();
-			case 1: setMenu(3);
-			}
-		case 4: //Info
-			switch(id) {
-			case 0: System.loadUrl(githubLink+"#about-game");
-			case 1: System.loadUrl(githubLink+"#about-level-editor");
-			case 2: System.loadUrl(githubLink+"#about-authors");
-			case 3: System.loadUrl(githubLink);
-			case 4: setMenu(0);
-			}
 
-		default: setMenu(0);
+			case 2: // Editor
+				switch (id) {
+					case 0:
+						var editor = new Editor();
+						editor.show();
+						editor.init();
+					case 5: setMenu(0);
+				}
+			case 3: // Settings
+				switch (id) {
+					case 2:
+						for (i in 0...Lang.ids.length) {
+							var lang = Lang.ids[i];
+							if (lang == Lang.iso) {
+								var next = i + 1 < Lang.ids.length ? Lang.ids[i + 1] : Lang.ids[0];
+								Lang.set(next);
+								break;
+							}
+						}
+						Settings.set({lang: Lang.iso});
+						Graphics.fontGlyphs = Lang.fontGlyphs;
+						setMenu(3);
+					case 3:
+					/*if (checker == null) checker = Timer.delay(function() {
+						Screen.isTouch = !Screen.isTouch;
+						Settings.set({touchMode: Screen.isTouch});
+						setMenu(3);
+						checker = null;
+					}, 100);*/
+					case 4: setMenu(35);
+					case 5: setMenu(0);
+				}
+			case 35: // Other Settings
+				switch (id) {
+					case 0: Settings.reset();
+					case 1: setMenu(3);
+				}
+			case 4: // Info
+				switch (id) {
+					case 0: System.loadUrl(githubLink + "#about-game");
+					case 1: System.loadUrl(githubLink + "#about-level-editor");
+					case 2: System.loadUrl(githubLink + "#about-authors");
+					case 3: System.loadUrl(githubLink);
+					case 4: setMenu(0);
+				}
+
+			default:
+				setMenu(0);
 		}
 	}
 
@@ -330,7 +330,7 @@ class Menu extends Screen {
 
 	override function onResize():Void {
 		var min = Math.min(Screen.w, Screen.h);
-		fontSize = Std.int(min/10/2)*2;
+		fontSize = Std.int(min / 10 / 2) * 2;
 		var maxW = 0.0;
 		for (item in items) {
 			var w = font.width(fontSize, item.text);
@@ -392,7 +392,7 @@ class MenuButton extends ui.Trigger {
 	public var isOver:Bool;
 	public var align:Int;
 
-	public function new(text:String, font:Font, size:Int, ?p:Point, ?r:Rect, align=0) {
+	public function new(text:String, font:Font, size:Int, ?p:Point, ?r:Rect, align = 0) {
 		this.text = text;
 		this.font = font;
 		this.fontSize = size;
@@ -446,15 +446,15 @@ class MenuButton extends ui.Trigger {
 	}
 
 	function alignment():Float {
-		switch(align) {
-		case 1: //center
-			var w = font.width(fontSize, text);
-			return (rect.w - w) / 2;
-		case 2: //right
-			var w = font.width(fontSize, text);
-			return rect.w - w;
-		default:
-			return 0;
+		switch (align) {
+			case 1: // center
+				var w = font.width(fontSize, text);
+				return (rect.w - w) / 2;
+			case 2: // right
+				var w = font.width(fontSize, text);
+				return rect.w - w;
+			default:
+				return 0;
 		}
 	}
 

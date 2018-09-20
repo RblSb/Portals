@@ -112,12 +112,10 @@ class Game extends Screen {
 			tilemap.loadMap(autoSave.map);
 		}
 		var rect = player.rect;
-		rect.x = spawn.x * tilemap.tileSize + (tilemap.tileSize - rect.w)/2;
+		rect.x = spawn.x * tilemap.tileSize + (tilemap.tileSize - rect.w) / 2;
 		rect.y = spawn.y * tilemap.tileSize + (tilemap.tileSize - rect.h);
-		if (player.speed.x != 0)
-			player.speed.x = Math.abs(player.speed.x)/player.speed.x;
-		if (player.speed.y != 0)
-			player.speed.y = Math.abs(player.speed.y)/player.speed.y;
+		if (player.speed.x != 0) player.speed.x = Math.abs(player.speed.x) / player.speed.x;
+		if (player.speed.y != 0) player.speed.y = Math.abs(player.speed.y) / player.speed.y;
 		player.rotate = 0;
 		Portal.removeAll();
 		particlers = [];
@@ -261,19 +259,20 @@ class Game extends Screen {
 	}
 
 	function viewModeCamera():Void {
-		if (tilemap.w * tilemap.tileSize < Screen.w
-			&& tilemap.h * tilemap.tileSize < Screen.h) {
+		if (tilemap.w * tilemap.tileSize < Screen.w &&
+			tilemap.h * tilemap.tileSize < Screen.h) {
 			viewMode = false;
 			return;
 		}
 
-		var sx = 0.0, sy = 0.0, s = tilemap.tileSize/5;
+		var sx = 0.0, sy = 0.0, s = tilemap.tileSize / 5;
 		if (keys[KeyCode.Left] || keys[KeyCode.A]) sx += s;
 		if (keys[KeyCode.Right] || keys[KeyCode.D]) sx -= s;
 		if (keys[KeyCode.Up] || keys[KeyCode.W]) sy += s;
 		if (keys[KeyCode.Down] || keys[KeyCode.S]) sy -= s;
 		if (keys[KeyCode.Shift]) {
-			sx *= 2; sy *= 2;
+			sx *= 2;
+			sy *= 2;
 		}
 		var camera = tilemap.camera;
 		if (sx != 0) camera.x += sx;
@@ -304,13 +303,13 @@ class Game extends Screen {
 
 		if (viewMode) {
 			g.color = 0xFFFFFFFF;
-			g.drawRect(1, 0, Screen.w-1, Screen.h-2);
+			g.drawRect(1, 0, Screen.w - 1, Screen.h - 2);
 		}
 		if (Screen.isTouch) touch.draw(g);
 
-		//tilemap.drawLayer(g, 2);
-		//drawTileset(g);
-		//drawPointers(g);
+		// tilemap.drawLayer(g, 2);
+		// drawTileset(g);
+		// drawPointers(g);
 		g.end();
 	}
 
@@ -320,7 +319,7 @@ class Game extends Screen {
 			if (!p.isActive) continue;
 			if (p.isDown) g.color = 0xFFFF0000;
 			else g.color = 0xFFFFFFFF;
-			g.fillRect(p.x-1, p.y-1, 2, 2);
+			g.fillRect(p.x - 1, p.y - 1, 2, 2);
 		}
 		#end
 	}

@@ -31,11 +31,11 @@ class Touch {
 
 	public function new(game:Game) {
 		this.game = game;
-		//init();
+		// init();
 	}
 
 	public function init():Void {
-		//size = Std.int(mainSize * game.scale);
+		// size = Std.int(mainSize * game.scale);
 		size = mainSize;
 		initImages();
 		initButtons();
@@ -82,10 +82,10 @@ class Touch {
 		g.begin(true, 0x0);
 		fillBG(g);
 		g.color = COLOR;
-		var off = size/4;
+		var off = size / 4;
 		var w = size - off * 2;
-		var h = size/8;
-		g.fillRect(off, size/2 - h/2, w, h);
+		var h = size / 8;
+		g.fillRect(off, size / 2 - h / 2, w, h);
 		g.end();
 
 		plusBtn = Image.createRenderTarget(size, size);
@@ -93,11 +93,11 @@ class Touch {
 		g.begin(true, 0x0);
 		fillBG(g);
 		g.color = COLOR;
-		var off = size/4;
+		var off = size / 4;
 		var w = size - off * 2;
-		var h = size/8;
-		g.fillRect(off, size/2 - h/2, w, h);
-		g.fillRect(size/2 - h/2, off, h, w);
+		var h = size / 8;
+		g.fillRect(off, size / 2 - h / 2, w, h);
+		g.fillRect(size / 2 - h / 2, off, h, w);
 		g.end();
 
 		pauseBtn = Image.createRenderTarget(size, size);
@@ -105,14 +105,14 @@ class Touch {
 		g.begin(true, 0x0);
 		fillBG(g);
 		g.color = COLOR;
-		var off = size/4;
-		var w = size/8;
-		var h = size/2;
+		var off = size / 4;
+		var w = size / 8;
+		var h = size / 2;
 		g.fillRect(off, off, w, h);
 		g.fillRect(size - off - w, off, w, h);
 		g.end();
 
-		var fix = Image.createRenderTarget(1, 1); //fix
+		var fix = Image.createRenderTarget(1, 1); // fix
 	}
 
 	inline function fillBG(g:Graphics):Void {

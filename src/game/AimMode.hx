@@ -7,7 +7,7 @@ import khm.tilemap.Tilemap;
 import khm.Types.IPoint;
 import khm.Types.Point;
 
-class AimMode { //TODO remake it to use in turrels too
+class AimMode { // TODO remake it to use in turrels too
 
 	var player:Player;
 	var lvl:Tilemap;
@@ -15,10 +15,10 @@ class AimMode { //TODO remake it to use in turrels too
 	function get_tileSize() return lvl.tileSize;
 
 	public var state:Bool = false;
-	var tiles:Array<IPoint>; //in aimline
+	var tiles:Array<IPoint>; // in aimline
 	var aimLine:{p:Point, p2:Point};
 	var sideLine:{p:Point, p2:Point};
-	//to portals
+	// to portals
 	public var tile:IPoint;
 	public var side:Int;
 
@@ -33,22 +33,22 @@ class AimMode { //TODO remake it to use in turrels too
 		if (!props.portalize) g.color = 0x66808080;
 		else {
 			var color:Color = Portal.colors[aimType];
-			color.A = 0.4; //0x66 / 255
+			color.A = 0.4; // 0x66 / 255
 			g.color = color;
 			if (sideLine != null)
-			g.drawLine(
-				sideLine.p.x + lvl.camera.x,
-				sideLine.p.y + lvl.camera.y,
-				sideLine.p2.x + lvl.camera.x,
-				sideLine.p2.y + lvl.camera.y
-			);
+				g.drawLine(
+					sideLine.p.x + lvl.camera.x,
+					sideLine.p.y + lvl.camera.y,
+					sideLine.p2.x + lvl.camera.x,
+					sideLine.p2.y + lvl.camera.y
+				);
 		}
 		#if debug
 		/*for (tile in tiles) g.drawRect(
-			tile.x * tileSize + lvl.camera.x,
-			tile.y * tileSize + lvl.camera.y,
-			tileSize, tileSize
-		);*/
+				tile.x * tileSize + lvl.camera.x,
+				tile.y * tileSize + lvl.camera.y,
+				tileSize, tileSize
+			); */
 		#end
 		if (aimLine == null) return;
 		g.drawLine(
@@ -65,7 +65,7 @@ class AimMode { //TODO remake it to use in turrels too
 			tile = null;
 			return;
 		}
-		tile = tiles[tiles.length-1];
+		tile = tiles[tiles.length - 1];
 		var end = checkSides(p, p2, tile);
 		if (end == null) aimLine = null;
 		else aimLine = {
@@ -75,8 +75,8 @@ class AimMode { //TODO remake it to use in turrels too
 	}
 
 	function lineOfSight(p:Point, p2:Point):Array<IPoint> {
-		var p = {x: p.x/tileSize, y: p.y/tileSize};
-		var p2 = {x: p2.x/tileSize, y: p2.y/tileSize};
+		var p = {x: p.x / tileSize, y: p.y / tileSize};
+		var p2 = {x: p2.x / tileSize, y: p2.y / tileSize};
 		var dx = Math.abs(p2.x - p.x);
 		var dy = Math.abs(p2.y - p.y);
 		var x = Math.floor(p.x);
@@ -132,11 +132,11 @@ class AimMode { //TODO remake it to use in turrels too
 	function checkSides(p:Point, p2:Point, tile:IPoint):Point {
 		var tx = tile.x * tileSize;
 		var ty = tile.y * tileSize;
-		var sides:Array<Array<Point>> = [ //only to get side
-			[{x: tx, y: ty}, {x: tx + tileSize, y: ty}], //top of tile
-			[{x: tx, y: ty + tileSize}, {x: tx + tileSize, y: ty + tileSize}], //bottom
-			[{x: tx, y: ty}, {x: tx, y: ty + tileSize}], //left
-			[{x: tx + tileSize, y: ty}, {x: tx + tileSize, y: ty + tileSize}] //right
+		var sides:Array<Array<Point>> = [ // only to get side
+			[{x: tx, y: ty}, {x: tx + tileSize, y: ty}], // top of tile
+			[{x: tx, y: ty + tileSize}, {x: tx + tileSize, y: ty + tileSize}], // bottom
+			[{x: tx, y: ty}, {x: tx, y: ty + tileSize}], // left
+			[{x: tx + tileSize, y: ty}, {x: tx + tileSize, y: ty + tileSize}] // right
 		];
 
 		for (i in 0...sides.length) {
@@ -146,8 +146,14 @@ class AimMode { //TODO remake it to use in turrels too
 			if (i == 3 && p.x < tx + tileSize) continue;
 			var point = Collision.doLinesIntersect(p, p2, sides[i][0], sides[i][1]);
 			if (point != null) {
-				if (i == 0) {sides[i][0].y--; sides[i][1].y--;};
-				if (i == 3) {sides[i][0].x++; sides[i][1].x++;};
+				if (i == 0) {
+					sides[i][0].y--;
+					sides[i][1].y--;
+				};
+				if (i == 3) {
+					sides[i][0].x++;
+					sides[i][1].x++;
+				};
 
 				sideLine = {p: sides[i][0], p2: sides[i][1]};
 				side = i;
