@@ -96,7 +96,7 @@ private class TilesetGenerator {
 	var h:Int;
 	var tileSize:Int;
 
-	var offX = 0;
+	var offset = 0;
 	var x = 0;
 	var y = 0;
 	var next = {
@@ -109,20 +109,24 @@ private class TilesetGenerator {
 
 	public function fromJSON(json:TSTiles):TSData {
 		var layers = json.layers;
-		for (layer in layers)
-			for (id in 0...layer.length)
-				fillProps(layer[id], id);
 
 		tileSize = json.tileSize;
 		var layersLength = layers.length;
 		var layersOffsets = [0]; // offsets in layers range
-		var tilesLengths:Array<Int> = []; // layers tiles length
+		var tilesLengths:Array<Int> = [ // tiles length in layers
+			for (layer in layers) layer.length - 1
+		];
 		var sprites:Array<Array<TSSprite>> = [
 			for (layer in layers) []
 		];
 		props = [ // props for every tile/frame
 			for (layer in layers) []
 		];
+		for (layer in layers) { //init file/x/y props
+			for (id in 0...layer.length) {
+				fillProps(layer[id], id);
+			}
+		}
 
 		var tilesCount = countTiles(layers);
 		w = Math.ceil(Math.sqrt(tilesCount));
@@ -136,39 +140,35 @@ private class TilesetGenerator {
 			var layer = layers[l];
 			// empty tile properties for every layer
 			addProps(l, layer.shift());
-			var tilesN = 0;
 
 			for (tile in layer) {
 				addTile(g, l, tile);
-				tilesN++;
 			}
-
-			tilesLengths.push(tilesN);
 
 			// draw sprite frames after all layer tiles
 			var spritesN = 0;
 			var spriteOffset = 0;
 
-			for (sprite in layer) {
-				var len = sprite.frames.length;
+			for (tile in layer) {
+				var len = tile.frames.length;
 				if (len == 0) continue;
 
-				sprites[l][sprite.id] = {
+				sprites[l][tile.id] = {
 					firstFrame: spriteOffset,
 					length: len,
-					id: sprite.id
+					id: tile.id
 				};
 				spriteOffset += len;
 
-				for (tile in sprite.frames) {
-					addTile(g, l, tile);
+				for (frame in tile.frames) {
+					addTile(g, l, frame);
 					spritesN++;
 				}
 			}
 
 			// save layer offset
 			var prev = layersOffsets[layersOffsets.length - 1];
-			layersOffsets.push(prev + tilesN + spritesN);
+			layersOffsets.push(prev + layer.length + spritesN);
 		}
 		g.end();
 		return {
@@ -186,11 +186,46 @@ private class TilesetGenerator {
 
 	function fillProps(tile:TSProps, id:Int):Void {
 		if (tile.id == null) tile.id = id;
-		if (tile.file != null) tile.file = ~/(-|\/)/g.replace(tile.file, "_");
 		if (tile.frames == null) tile.frames = [];
-		else for (frame in tile.frames) {
-			if (frame.file != null) frame.file = ~/(-|\/)/g.replace(frame.file, "_");
+		if (id == 0) return;
+
+		initFilePath(tile);
+		initTileCords(tile);
+
+		for (frame in tile.frames) {
+			initFilePath(frame);
+			initTileCords(frame);
 		}
+	}
+
+	function initFilePath(tile:TSProps):Void {
+		if (tile.file != null) {
+			tile.file = ~/(-|\/)/g.replace(tile.file, "_");
+			if (next.file != tile.file) {
+				next.x = 0;
+				next.y = 0;
+			}
+			next.file = tile.file;
+		} else {
+			tile.file = next.file;
+			if (Assets.images.get(tile.file) == null) trace(tile);
+		}
+	}
+
+	function initTileCords(tile:TSProps):Void {
+		var img = Assets.images.get(next.file);
+		if (tile.x == null && tile.y == null) {
+			if (tile.tx != null && tile.ty != null) {
+				tile.x = tile.tx * tileSize;
+				tile.y = tile.ty * tileSize;
+			} else {
+				tile.x = next.x;
+				tile.y = next.y;
+			}
+		}
+		var nextTile = tile.y * img.height + tile.x + tileSize;
+		next.x = nextTile % (img.width * tileSize);
+		next.y = Std.int(nextTile / (img.width * tileSize)) * tileSize;
 	}
 
 	function addTile(g:Graphics, l:Int, tile:TSProps):Void {
@@ -200,6 +235,7 @@ private class TilesetGenerator {
 		g.transformation = FastMatrix3.identity();
 		if (transform == null) addProps(l, tile);
 		else addTransformedProps(l, tile, transform);
+		pushOffset();
 	}
 
 	function setTransformation(g:Graphics, transform:TSTransformation):Void {
@@ -227,38 +263,9 @@ private class TilesetGenerator {
 		return count;
 	}
 
-	function getFile(tile:TSProps):Image {
-		if (tile.file != null) {
-			if (next.file != tile.file) {
-				next.x = 0;
-				next.y = 0;
-			}
-			next.file = tile.file;
-		}
-		if (Assets.images.get(next.file) == null) trace(tile);
-		return Assets.images.get(next.file);
-	}
-
-	function initTileCords(tile:TSProps, img:Image):Void {
-		if (tile.x == null && tile.y == null) {
-			if (tile.tx != null && tile.ty != null) {
-				tile.x = tile.tx * tileSize;
-				tile.y = tile.ty * tileSize;
-			} else {
-				tile.x = next.x;
-				tile.y = next.y;
-			}
-		}
-		var nextCords = tile.y * img.height + tile.x + tileSize;
-		next.x = nextCords % (img.width * tileSize);
-		next.y = Std.int(nextCords / (img.width * tileSize)) * tileSize;
-	}
-
 	function drawTile(g:Graphics, tile:TSProps):Void {
-		var img = getFile(tile);
-		initTileCords(tile, img);
+		var img = Assets.images.get(tile.file);
 		g.drawSubImage(img, x, y, tile.x, tile.y, tileSize, tileSize);
-		pushOffset();
 	}
 
 	function setRotation(g:Graphics, angle:Int):Void {
@@ -294,9 +301,9 @@ private class TilesetGenerator {
 	}
 
 	function pushOffset():Void {
-		offX += tileSize;
-		x = offX % (w * tileSize);
-		y = Std.int(offX / (w * tileSize)) * tileSize;
+		offset += tileSize;
+		x = offset % (w * tileSize);
+		y = Std.int(offset / (w * tileSize)) * tileSize;
 	}
 
 	function addProps(l:Int, tile:TSProps):Void {

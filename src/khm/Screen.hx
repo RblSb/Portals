@@ -61,7 +61,7 @@ class Screen {
 	public static function init(?sets:ScreenSets):Void {
 		w = System.windowWidth();
 		h = System.windowHeight();
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		isTouch = untyped __js__('"ontouchstart" in window');
 		#elseif (kha_android || kha_ios)
 		isTouch = true;

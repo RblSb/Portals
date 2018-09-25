@@ -307,8 +307,8 @@ class Game extends Screen {
 		}
 		if (Screen.isTouch) touch.draw(g);
 
-		// tilemap.drawLayer(g, 2);
-		// drawTileset(g);
+		tilemap.drawLayer(g, 2);
+		drawTileset(g);
 		// drawPointers(g);
 		g.end();
 	}

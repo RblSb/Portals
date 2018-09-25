@@ -20,7 +20,8 @@ class EnumAbstractTools {
 				}
 				code += 'default: throw("Unknown case " + $name);}';
 				return Context.parse(code, Context.currentPos());
-			default: throw new Error(type.toString() + " should be @:enum abstract", typePath.pos);
+			default:
+				throw new Error(type.toString() + " should be @:enum abstract", typePath.pos);
 		}
 	}
 
@@ -39,7 +40,8 @@ class EnumAbstractTools {
 				}
 				code += "}";
 				return Context.parse(code, Context.currentPos());
-			default: throw new Error(type.toString() + " should be @:enum abstract", typePath.pos);
+			default:
+				throw new Error(type.toString() + " should be @:enum abstract", typePath.pos);
 		}
 	}
 
@@ -66,7 +68,8 @@ class Macro {
 				}
 				code += "}";
 				return Context.parse(code, Context.currentPos());
-			default: throw new Error(type.toString() + " should be type", typePath.pos);
+			default:
+				throw new Error(type.toString() + " should be type", typePath.pos);
 		}
 	}
 

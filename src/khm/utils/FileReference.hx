@@ -1,6 +1,6 @@
 package khm.utils;
 
-#if kha_html5
+#if (kha_html5 || kha_debug_html5)
 import js.Browser.window;
 import js.Browser.document;
 #end
@@ -10,7 +10,7 @@ private typedef FileLoadFunc = Any->String->Void;
 class FileReference {
 
 	public static function onDrop(onFileLoad:FileLoadFunc, isBinary = true):Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		function drop(e:js.html.DragEvent):Void {
 			var file = e.dataTransfer.files[0];
 			var reader = new js.html.FileReader();
@@ -33,7 +33,7 @@ class FileReference {
 	}
 
 	public static function browse(onFileLoad:FileLoadFunc, isBinary = true):Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var input = document.createElement("input");
 		input.style.visibility = "hidden";
 		input.setAttribute("type", "file");
@@ -64,7 +64,7 @@ class FileReference {
 	}
 
 	public static function saveJSON(name:String, json:String):Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var blob = new js.html.Blob([json], {
 			type: "application/json"
 		});
@@ -86,7 +86,7 @@ class FileReference {
 	}
 
 	public static function saveCanvas(name:String, w:Int, h:Int, pixels:haxe.io.Bytes):Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var canvas = document.createCanvasElement();
 		canvas.width = w;
 		canvas.height = h;
@@ -123,7 +123,7 @@ class FileReference {
 
 	#elseif upng
 	public static function savePNG(name:String, w:Int, h:Int, pixels:haxe.io.Bytes):Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var buffer = new js.html.Uint8ClampedArray(pixels.getData());
 		var data = UPNG.encodeLL([buffer.buffer], w, h, 3, 1, 8);
 

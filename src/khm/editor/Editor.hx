@@ -174,7 +174,7 @@ class Editor extends Screen {
 			if (scale < 9) setScale(scale + 1);
 
 		} else if (key == KeyCode.Escape) {
-			#if kha_html5
+			#if (kha_html5 || kha_debug_html5)
 			var confirm = js.Browser.window.confirm;
 			if (!confirm(Lang.get("reset_warning") + " " + Lang.get("are_you_sure"))) return;
 			#end
@@ -206,7 +206,7 @@ class Editor extends Screen {
 	}
 
 	function createMap():Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var prompt = js.Browser.window.prompt;
 		var newSize = Json.stringify({w: 20, h: 20});
 		var size:ISize = Json.parse(prompt("Map Size:", newSize));
@@ -235,7 +235,7 @@ class Editor extends Screen {
 	}
 
 	function resizeMap():Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		var prompt = js.Browser.window.prompt;
 		var addSize = Json.stringify([0, 1, 0, 1]);
 		var size:Array<Int> = Json.parse(
@@ -317,7 +317,7 @@ class Editor extends Screen {
 
 	function save(map:GameMap, name = "map"):Void {
 		var data = tilemap.toJSON(map);
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		FileReference.saveJSON(name, Json.stringify(data));
 		#else
 		// TODO select path and write file
@@ -325,7 +325,7 @@ class Editor extends Screen {
 	}
 
 	function browse():Void {
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		FileReference.browse(onFileLoad, false);
 		#else
 		// TODO browse path

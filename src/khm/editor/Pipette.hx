@@ -17,7 +17,9 @@ class Pipette implements Tool {
 	}
 
 	public function clearHistory():Void {}
+
 	public function undo():Void {}
+
 	public function redo():Void {}
 
 	public function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {

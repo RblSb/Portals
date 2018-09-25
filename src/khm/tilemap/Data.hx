@@ -6,6 +6,7 @@ import khm.tilemap.Tilemap.GameObject;
 
 /** Tile properties structure. `id:Int` property is requered. **/
 typedef Props = haxe.macro.MacroType<[khm.tilemap.Macro.build("TileProps")]>;
+
 /** If `-D khmProps=path` doesn't specify a path to the custom Props typedef, this one is used. **/
 typedef TileProps = {
 	id:Int

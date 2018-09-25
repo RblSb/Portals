@@ -23,7 +23,9 @@ class Arrow implements Tool {
 	}
 
 	public function clearHistory():Void {}
+
 	public function undo():Void {}
+
 	public function redo():Void {}
 
 	public function onMouseDown(p:Pointer, layer:Int, x:Int, y:Int, tile:Int):Void {
@@ -56,7 +58,7 @@ class Arrow implements Tool {
 			}
 		}
 		if (objs.length == 0) return;
-		#if kha_html5
+		#if (kha_html5 || kha_debug_html5)
 		Modal.prompt("Object:", Json.stringify(objs, "  "), function(data:String) {
 			var objs:Array<GameObject> = Json.parse(data);
 			if (objs != null) tilemap.setObjects(layer, x, y, objs);

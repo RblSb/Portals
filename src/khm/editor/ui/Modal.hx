@@ -1,6 +1,6 @@
 package khm.editor.ui;
 
-#if kha_html5
+#if (kha_html5 || kha_debug_html5)
 import js.Browser.document;
 import js.html.Event;
 #end
