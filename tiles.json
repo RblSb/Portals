@@ -1,0 +1,183 @@
+{
+	"tileSize": 48,
+	"layers": [
+		[
+			{},
+			{
+				"file": "tiles/0/1"
+			},
+			{
+				"file": "tiles/0/2"
+			},
+			{
+				"tx": 0,
+				"ty": 0,
+				"transformation": "rotate90"
+			},
+			{
+				"tx": 0,
+				"ty": 0,
+				"transformation": "rotate180"
+			},
+			{
+				"tx": 0,
+				"ty": 0,
+				"transformation": "rotate270"
+			}
+		],
+		[
+			{},
+			{
+				"file": "tiles/1/1",
+				"collide": true,
+				"permeable": false,
+				"portalize": true
+			},
+			{
+				"file": "tiles/1/2",
+				"collide": true,
+				"permeable": false,
+				"portalize": false
+			},
+			{
+				"file": "tiles/1/3",
+				"collide": false,
+				"permeable": false,
+				"portalize": false
+			},
+			{
+				"file": "tiles/1/4",
+				"collide": false,
+				"permeable": true
+			},
+			{
+				"file": "tiles/1/5",
+				"collide": false,
+				"permeable": false,
+				"portalize": false,
+				"frames": [
+					{
+						"file": "tiles/1/5",
+						"tx": 1,
+						"ty": 0,
+						"collide": false,
+						"permeable": true
+					},
+					{
+						"collide": false,
+						"permeable": true
+					}
+				]
+			},
+			{
+				"file": "tiles/1/6",
+				"collide": false,
+				"permeable": true,
+				"frames": [{
+					"file": "tiles/1/6",
+					"tx": 1,
+					"ty": 0
+				}]
+			},
+			{
+				"file": "tiles/1/7",
+				"collide": false,
+				"permeable": false,
+				"portalize": false
+			},
+			{
+				"file": "tiles/1/8",
+				"collide": false,
+				"permeable": true,
+				"frames": [
+					{
+						"file": "tiles/1/8",
+						"tx": 1,
+						"ty": 0
+					}, {}, {}, {}, {}, {}
+				]
+			},
+			{
+				"file": "tiles/1/8",
+				"tx": 0,
+				"ty": 0,
+				"collide": false,
+				"permeable": true,
+				"transformation": "rotate90",
+				"frames": [
+					{
+						"file": "tiles/1/8",
+						"tx": 1,
+						"ty": 0,
+						"transformation": "rotate90"
+					},
+					{"transformation": "rotate90"},
+					{"transformation": "rotate90"},
+					{"transformation": "rotate90"},
+					{"transformation": "rotate90"},
+					{"transformation": "rotate90"}
+				]
+			},
+			{
+				"file": "tiles/1/8",
+				"tx": 0,
+				"ty": 0,
+				"collide": false,
+				"permeable": true,
+				"transformation": "rotate180",
+				"frames": [
+					{
+						"file": "tiles/1/8",
+						"tx": 1,
+						"ty": 0,
+						"transformation": "rotate180"
+					},
+					{"transformation": "rotate180"},
+					{"transformation": "rotate180"},
+					{"transformation": "rotate180"},
+					{"transformation": "rotate180"},
+					{"transformation": "rotate180"}
+				]
+			},
+			{
+				"file": "tiles/1/8",
+				"tx": 0,
+				"ty": 0,
+				"collide": false,
+				"permeable": true,
+				"transformation": "rotate270",
+				"frames": [
+					{
+						"file": "tiles/1/8",
+						"tx": 1,
+						"ty": 0,
+						"transformation": "rotate270"
+					},
+					{"transformation": "rotate270"},
+					{"transformation": "rotate270"},
+					{"transformation": "rotate270"},
+					{"transformation": "rotate270"},
+					{"transformation": "rotate270"}
+				]
+			}
+		],
+		[
+			{},
+			{
+				"file": "tiles/2/1"
+			},
+			{
+				"file": "tiles/2/2"
+			},
+			{
+				"file": "tiles/2/3"
+			},
+			{
+				"file": "tiles/2/4"
+			},
+			{
+				"file": "tiles/2/5"
+			}
+		]
+	]
+}

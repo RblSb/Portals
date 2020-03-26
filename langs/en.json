@@ -1,0 +1,62 @@
+{
+	"loading": "Loading...",
+	"yes": "Yes",
+	"no": "No",
+	"on": "On",
+	"off": "Off",
+
+	"game": "Game",
+	"level_editor": "Level Editor",
+	"settings": "Settings",
+	"info": "Info",
+	"exit": "Exit",
+
+	"continue": "Continue",
+	"new_game": "New Game",
+	"level_select": "Level Select",
+	"levels_online": "Levels Online",
+	"back": "Back",
+
+	"play_traning": "Play Training?",
+	"are_you_sure": "Are you sure?",
+	"reset_warning": "The data will be lost.",
+	"training": "Training",
+	"level": "Level",
+
+	"path": "Path",
+	"width": "Width",
+	"height": "Height",
+	"create": "Create",
+
+	"music": "Music",
+	"control_type": "Control Type",
+	"language": "Language",
+	"touch": "Touch",
+	"other": "Other",
+
+	"reset_data": "Reset Data",
+
+	"about_game": "About Game",
+	"about_editor": "About Editor",
+	"about_authors": "About Authors",
+	"github": "Github",
+
+	"restart": "Restart",
+	"main_menu": "Main Menu",
+
+	"file": "File",
+	"edit": "Edit",
+	"view": "View",
+	"help": "Help",
+	"about": "About",
+	"new": "New",
+	"open": "Open",
+	"save": "Save",
+	"file_sets": "File Sets",
+	"write_gif": "Write GIF",
+	"undo": "Undo",
+	"redo": "Redo",
+	"grid": "Grid",
+	"toggle_theme": "Toggle Theme",
+	"reset_scale": "Reset Scale"
+}
