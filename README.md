@@ -1,6 +1,6 @@
 ## Portals! 2D demo
 
-[Play Online](http://mssite.org/projects/Portals/)
+[Play Online](https://rblsb.github.io/Portals/)
 
 ### About Game
 * -/+ - Rescale
